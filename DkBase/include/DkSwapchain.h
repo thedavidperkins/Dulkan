@@ -18,6 +18,7 @@ class DkSwapchain {
 public:
 	bool init();
 	void finalize();
+	bool resize();
 
 	// Getters
 	VkSwapchainKHR get() { return m_swapchain; }

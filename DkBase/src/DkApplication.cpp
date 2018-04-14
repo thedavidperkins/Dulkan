@@ -151,6 +151,7 @@ void DkApplication::render() {
 			case USER_MESSAGE_MOUSE_MOVE:
 			case USER_MESSAGE_MOUSE_WHEEL:
 			case USER_MESSAGE_RESIZE:
+				loop = m_swapchain.resize();
 				break;
 			case USER_MESSAGE_QUIT:
 				loop = false;

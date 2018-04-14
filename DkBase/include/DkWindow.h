@@ -35,6 +35,7 @@ public:
 
 	bool init();
 	void finalize();
+	bool resize();
 
 	// set init values
 	void setWindowRect(VkRect2D windowRect);

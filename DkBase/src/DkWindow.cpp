@@ -190,7 +190,6 @@ bool DkWindow::checkPresentMode(VkPresentModeKHR& modeInOut) {
 
 bool DkWindow::present(
 	DkQueue& queue,
-
 	const std::vector<DkSemaphore*>& semaphores,
 	const std::vector<DkPresentInfo>& presentInfo
 ) {
@@ -221,4 +220,8 @@ bool DkWindow::present(
 		return false;
 	}
 	return true;
+}
+
+bool DkWindow::resize() {
+	return _refreshSurfaceCapabilities();
 }

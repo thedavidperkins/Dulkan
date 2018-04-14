@@ -225,3 +225,10 @@ DkImageView* DkSwapchain::getNextImg(DkSemaphore* imgAcquiredSemaphore, uint& im
 
 	return m_images[imgIndex].View;
 }
+
+bool DkSwapchain::resize() {
+	if (!m_window.resize()) return false;
+	if (m_window.getSurfaceCapabilities().currentExtent.height != m_imgSize.height ||
+		m_window.getSurfaceCapabilities().currentExtent.width != m_imgSize.width) return init();
+	return true;
+}
