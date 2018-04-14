@@ -1,0 +1,10 @@
+HIGH PRIORITY:
+==============
+Add non-trivial descriptor set layouts
+
+
+LOW PRIORITY:
+=============
+Design shader specialization implementation
+Make dynamic state changes check for dynamic state enabled in pipeline
+Allow DkMesh objects to have multiple vertex buffer bindings and nonzero offset values
