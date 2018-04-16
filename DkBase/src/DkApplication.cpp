@@ -123,8 +123,8 @@ bool DkApplication::init() {
 	m_triangle = new DkMesh(nullptr);
 	m_triangle->addVerts({
 		{ 0.f, -.75f, 0.f },
-		{ -.75f, .75f, 0.f },
-		{ .75f, .75f, 0.f }
+		{ -.75f, 0.f, 0.f },
+		{ .75f, 0.f, 0.f }
 	});
 	DkCommandBuffer* bfr = m_commandPools[DK_GRAPHICS_QUEUE]->allocate(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 	if (!m_triangle->initBuffer(m_device, bfr, m_queues[DK_GRAPHICS_QUEUE])) return false;

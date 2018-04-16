@@ -1,7 +1,20 @@
 HIGH PRIORITY:
 ==============
 Add non-trivial descriptor set layouts
-
+Add matrix and vector operations and common matrix factory:
+	- Scaling matrix
+	- Translation matrix
+	- Rotation matrix
+	- Perspective matrix
+	- Matrix multiplication
+	- Matrix inversion
+	- Matrix transposition
+	- Normalize
+	- Matrix negation
+	- Vector addition
+	- Matrix addition
+	- Vector subtraction
+	- Matrix subtraction
 
 LOW PRIORITY:
 =============
