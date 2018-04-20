@@ -5,6 +5,13 @@
 
 using namespace math;
 
+template<uint n>
+static void vecNear(vec<n> first, vec<n> second, float tol = 1.e-7f) {
+	for (uint i = 0; i < n; ++i) {
+		ASSERT_NEAR(first[i], second[i], tol);
+	}
+}
+
 // VECTOR TESTS
 
 TEST(DkMathTests, vecIndex) {
@@ -148,6 +155,18 @@ TEST(DkMathTests, matIndex) {
 	ASSERT_EQ(1.f, a(3, 3));
 	ASSERT_ANY_THROW(a(4, 3));
 	ASSERT_ANY_THROW(a(3, 4));
+}
+
+TEST(DkMathTests, matIdent) {
+	mat4 id = ident<4>();
+	mat4 exp(
+		1.f, 0.f, 0.f, 0.f,
+		0.f, 1.f, 0.f, 0.f,
+		0.f, 0.f, 1.f, 0.f,
+		0.f, 0.f, 0.f, 1.f
+	);
+
+	ASSERT_EQ(exp, id);
 }
 
 TEST(DkMathTests, matScalMult) {
@@ -443,4 +462,75 @@ TEST(DkMathTests, mat3Invert) {
 	ASSERT_EQ(i, exp_a * inverse(exp_a));
 	ASSERT_EQ(i, a * inverse(a));
 	ASSERT_ANY_THROW(inverse(z));
+}
+
+// MATRIX/VECTOR INTERACTION
+
+TEST(DkMathTests, matVecMult) {
+	mat4 a(
+		1.f, 1.f, 1.f, 1.f,
+		1.f, 1.f, 1.f, 0.f,
+		1.f, 1.f, 0.f, 0.f,
+		1.f, 0.f, 0.f, 0.f
+	);
+	vec4 v(1.f);
+	vec4 exp4(4.f, 3.f, 2.f, 1.f);
+
+	mat<3, 4> b({
+		1.f, 2.f, 1.f, 2.f,
+		2.f, 1.f, 2.f, 0.f,
+		0.f, 1.f, 0.f, 1.f
+	});
+
+	vec3 exp3(6.f, 5.f, 2.f);
+
+	mat4 id = ident<4>();
+	mat4 zm;
+	vec4 zv;
+
+	ASSERT_EQ(exp4, a * v);
+	ASSERT_EQ(exp3, b * v);
+	ASSERT_EQ(v, id * v);
+	ASSERT_EQ(zv, zm * v);
+}
+
+// SPECIAL MATRIX CATEGORIES
+
+TEST(DkMathTests, mat3Rotation) {
+	vec3 i(1.f, 0.f, 0.f);
+	vec3 j(0.f, 1.f, 0.f);
+	vec3 k(0.f, 0.f, 1.f);
+
+	vecNear(j, rotation(90, k) * i);
+	vecNear(-i, rotation(180, k) * i);
+	vecNear(-j, rotation(-90, k) * i);
+	vecNear(i, rotation(0, k) * i);
+	vecNear(-i, rotation(180, k) * i);
+	vecNear((i + j) / sqrt(2), rotation(45, k) * i);
+	vecNear(i, rotation(45, i) * i);
+}
+
+TEST(DkMathTests, mat4Scale) {
+	vec4 i(1.f, 0.f, 0.f, 1.f);
+	vec4 j(0.f, 1.f, 0.f, 1.f);
+	vec4 k(0.f, 0.f, 1.f, 1.f);
+
+	mat4 scl = scale(2.f, 3.f, 4.f);
+	
+	vec4 ie(2.f, 0.f, 0.f, 1.f);
+	vec4 je(0.f, 3.f, 0.f, 1.f);
+	vec4 ke(0.f, 0.f, 4.f, 1.f);
+
+	vecNear(ie, scl * i);
+	vecNear(je, scl * j);
+	vecNear(ke, scl * k);
+}
+
+TEST(DkMathTests, mat4Translate) {
+	vec4 a;
+	a[3] = 1.f;
+	mat4 tr = translate(1.f, 2.f, 3.f);
+	vec4 exp(1.f, 2.f, 3.f, 1.f);
+
+	vecNear(exp, tr * a);
 }

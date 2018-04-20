@@ -5,7 +5,7 @@
 #include "DkCommon.h"
 
 namespace math {
-
+	const float PI = 3.1415926536f;
 	// VECTOR
 
 	template<uint n>
@@ -16,6 +16,11 @@ namespace math {
 			std::fill(_v.begin(), _v.end(), f);
 		}
 		vec() : vec(0.f) {}
+		vec(const vec<n>& rhs) : _v(rhs._v) {}
+		vec<n>& operator=(const vec<n>& rhs) {
+			_v = rhs._v;
+			return (*this);
+		}
 
 		float& operator[](uint ind) {
 			if (ind < 0 || ind >= n) {
@@ -32,11 +37,26 @@ namespace math {
 		}
 
 		// right scalar multiplication
-		template<typename T>
-		vec<n> operator*(T scal) const {
+		vec<n> operator*(float scal) const {
 			vec<n> ret;
 			for (uint iter = 0; iter < n; ++iter) {
 				ret[iter] = _v[iter] * scal;
+			}
+			return ret;
+		}
+
+		vec<n> operator*(int scal) const {
+			vec<n> ret;
+			for (uint iter = 0; iter < n; ++iter) {
+				ret[iter] = _v[iter] * (float)scal;
+			}
+			return ret;
+		}
+
+		vec<n> operator*(double scal) const {
+			vec<n> ret;
+			for (uint iter = 0; iter < n; ++iter) {
+				ret[iter] = _v[iter] * (float)scal;
 			}
 			return ret;
 		}
@@ -74,6 +94,12 @@ namespace math {
 		vec2(float x, float y) : vec<2>({ x , y }) {}
 		vec2(float f) : vec<2>(f) {}
 		vec2() : vec<2>() {}
+		vec2(const vec<2>& rhs) : vec<2>(rhs) {}
+		vec2& operator=(const vec<2>& rhs) {
+			(*this)[0] = rhs[0];
+			(*this)[1] = rhs[1];
+			return (*this);
+		}
 	};
 
 	class vec3 : public vec<3> {
@@ -81,6 +107,18 @@ namespace math {
 		vec3(float x, float y, float z) : vec<3>({ x , y, z }) {}
 		vec3(float f) : vec<3>(f) {}
 		vec3() : vec<3>() {}
+		vec3(const vec<3>& rhs) : vec<3>(rhs) {}
+		vec3& operator=(const vec<3>& rhs) {
+			for (uint i = 0; i < 3; ++i) (*this)[i] = rhs[i];
+			return (*this);
+		}
+		vec3(const vec<4>& rhs) : vec<3>() {
+			for (uint i = 0; i < 3; ++i) (*this)[i] = rhs[i];
+		}
+		vec3& operator=(const vec<4>& rhs) {
+			for (uint i = 0; i < 3; ++i) (*this)[i] = rhs[i];
+			return(*this);
+		}
 	};
 
 	class vec4 : public vec<4> {
@@ -88,6 +126,23 @@ namespace math {
 		vec4(float x, float y, float z, float w) : vec<4>({ x , y, z, w }) {}
 		vec4(float f) : vec<4>(f) {}
 		vec4() : vec<4>() {}
+		vec4(const vec<4>& rhs) : vec<4>(rhs) {}
+		vec4& operator=(const vec<4>& rhs) {
+			(*this)[0] = rhs[0];
+			(*this)[1] = rhs[1];
+			(*this)[2] = rhs[2];
+			(*this)[3] = rhs[3];
+			return (*this);
+		}
+		vec4(const vec<3>& rhs) : vec<4>() {
+			for (uint i = 0; i < 3; ++i) (*this)[i] = rhs[i];
+			(*this)[3] = 1.f;
+		}
+		vec4& operator=(const vec<3>& rhs) {
+			for (uint i = 0; i < 3; ++i) (*this)[i] = rhs[i];
+			(*this)[3] = 1.f;
+			return (*this);
+		}
 	};
 
 	// MATRIX
@@ -100,6 +155,11 @@ namespace math {
 			std::fill(_m.begin(), _m.end(), f);
 		}
 		mat() : mat(0.f) {}
+		mat(const mat<n, m>& rhs) : _m(rhs._m) {}
+		mat<n, m> operator=(const mat<n, m>& rhs) {
+			_m = rhs._m;
+			return (*this);
+		}
 
 		// indexing
 		float& operator()(uint row, uint col) {
@@ -217,6 +277,22 @@ namespace math {
 
 		mat3(float f) : mat<3, 3>(f) {}
 		mat3() : mat<3, 3>() {}
+		mat3(const mat<3, 3>& rhs) : mat<3, 3>(rhs) {}
+		mat3(const mat<4, 4>& rhs) : mat<3, 3>() {
+			for (uint i = 0; i < 3; ++i) {
+				for (uint j = 0; j < 3; ++j) {
+					(*this)(i, j) = rhs(i, j);
+				}
+			}
+		}
+		mat3& operator=(const mat<3, 3>& rhs) {
+			for (uint i = 0; i < 3; ++i) {
+				for (uint j = 0; j < 3; ++j) {
+					(*this)(i, j) = rhs(i, j);
+				}
+			}
+			return (*this);
+		}
 	};
 
 	class mat4 : public mat<4, 4> {
@@ -234,6 +310,23 @@ namespace math {
 			}) {}
 		mat4(float f) :	mat<4, 4>(f) {}
 		mat4() : mat<4, 4>() {}
+		mat4(const mat<3, 3>& rhs) : mat<4, 4>() {
+			for (uint i = 0; i < 3; ++i) {
+				for (uint j = 0; j < 3; ++j) {
+					(*this)(i, j) = rhs(i, j);
+				}
+			}
+			(*this)(3, 3) = 1.f;
+		}
+		mat4(const mat<4, 4>& rhs) : mat<4, 4>(rhs) {}
+		mat4& operator=(const mat<4, 4>& rhs) {
+			for (uint i = 0; i < 4; ++i) {
+				for (uint j = 0; j < 4; ++j) {
+					(*this)(i, j) = rhs(i, j);
+				}
+			}
+			return (*this);
+		}
 	};
 
 	// VECTOR OPERATIONS ====================================
@@ -250,9 +343,19 @@ namespace math {
 	}
 
 	// left scalar multiplication
-	template<uint n, typename T>
-	vec<n> operator*(T scal, const vec<n>& v) {
+	template<uint n>
+	vec<n> operator*(float scal, const vec<n>& v) {
 		return v * scal;
+	}
+
+	template<uint n>
+	vec<n> operator*(int scal, const vec<n>& v) {
+		return v * (float)scal;
+	}
+
+	template<uint n>
+	vec<n> operator*(double scal, const vec<n>& v) {
+		return v * (float)scal;
 	}
 
 	// negation
@@ -343,8 +446,33 @@ namespace math {
 		return mt * (-1.f);
 	}
 
+	// identity matrix
+	template<uint n>
+	mat<n, n> ident() {
+		mat<n, n> ret;
+		for (uint i = 0; i < n; ++i) {
+			ret(i, i) = 1.f;
+		}
+		return ret;
+	}
+
+	// matrix vector multiplication
+	template<uint m, uint n>
+	vec<m> operator*(mat<m, n> mt, vec<n> v) {
+		vec<m> ret;
+		for (uint i = 0; i < m; ++i) {
+			ret[i] = dot(mt.row(i), v);
+		}
+		return ret;
+	}
+
 	float determinant(const mat<3, 3>& m);
 	mat<3, 3> inverse(const mat<3, 3>& m);
+	mat<3, 3> rotation(float angle, const vec<3>& axis);
+	mat<4, 4> scale(float sx, float sy, float sz);
+	mat<4, 4> translate(float tx, float ty, float tz);
+	mat<4, 4> lookAt(const vec<3>& eye, const vec<3>& center, const vec<3>& up);
+	mat<4, 4> perspective(float fovy, float aspect, float zNear, float zFar);
 }
 #endif // !DK_MATH_H
 

@@ -18,66 +18,45 @@
 
 class DkApplication {
 public:
-	bool init();
-	void render();
-	void finalize();
+	bool vulkanInit();
+	void vulkanFinalize();
+	virtual bool init() = 0;
+	virtual bool draw() = 0;
+	virtual void finalize() = 0 { vulkanFinalize(); }
+	virtual bool resize() = 0;
 
-	static DkApplication& getInstance() {
-		static DkApplication instance;
-		return instance;
-	}
+	virtual void render();
 
-	~DkApplication() { finalize(); }
+	virtual ~DkApplication() { finalize(); }
 
 	// Getters
 	std::string getAppName() { return m_instance.getAppName(); }
 	DkInstance& getDkInstance() { return m_instance; }
 	DkPhysicalDevice& getPhysDevice() { return m_physDevice; }
 	DkDevice& getDevice() { return m_device; }
-
-	// Setters
-	void setFrameCount(uint count);
+	VkDevice getDeviceHandle() { return m_device.get(); }
+	DkCommandPool* getCommandPool(DkQueueType type) { return m_commandPools[type]; }
+	DkQueue& getQueue(DkQueueType type) { return m_queues[type]; }
+	DkWindow& getWindow() { return m_window; }
 
 	// User interaction
 	//void MouseClick(size_t button_index, bool state);
 
-	bool draw();
-
-	DkApplication(const DkApplication& rhs) = delete;
-	DkApplication& operator=(const DkApplication rhs) = delete;
-private:
-	// Constructor
 	DkApplication();
-
+	DkApplication(const DkApplication& rhs) = delete;
+	DkApplication& operator=(const DkApplication& rhs) = delete;
+private:
 	// Helper member functions
 	bool _findQueueIndices(std::vector<uint>& indices);
 	void _getDeviceQueues();
 
-	// Options
-	uint m_frameCount;
-
-	// Managed objects
 	LIBRARY_TYPE m_vkLibrary;
 	DkInstance m_instance;
 	DkPhysicalDevice m_physDevice;
 	DkWindow m_window;
 	DkDevice m_device;
 	std::array<DkQueue, DK_NUM_QUEUE_TYPES> m_queues;
-	DkSwapchain m_swapchain;
 	std::vector<DkCommandPool*> m_commandPools;
-	std::vector<DkFrameResources*> m_frames;
-	uint m_curFrame;
-	bool m_initialized;
-
-	DkRenderPass m_renderPass;
-	DkMesh* m_triangle;
-	DkPipeline m_pipeline;
-
 };
-
-// Helper functions for commonly sought objects
-VkInstance getVkInstance();
-VkPhysicalDevice getPhysDevice();
-VkDevice getDevice();
 
 #endif//DK_APPLICATION_H

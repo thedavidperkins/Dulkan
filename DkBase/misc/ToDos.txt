@@ -1,11 +1,6 @@
 HIGH PRIORITY:
 ==============
 Add non-trivial descriptor set layouts
-Add matrix and vector operations and common matrix factory:
-	- Scaling matrix
-	- Translation matrix
-	- Rotation matrix
-	- Perspective matrix
 	
 LOW PRIORITY:
 =============

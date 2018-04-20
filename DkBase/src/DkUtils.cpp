@@ -1,6 +1,7 @@
 #include "DkUtils.h"
 #include "DkCommon.h"
 #include "DkApplication.h"
+#include "DkPhysicalDevice.h"
 
 bool getAvailableInstanceExtensions(std::vector<VkExtensionProperties>& availableInstanceExtensions) {
 	uint extensions_count;
@@ -20,17 +21,17 @@ bool getAvailableInstanceExtensions(std::vector<VkExtensionProperties>& availabl
 	return true;
 }
 
-bool getAvailableDeviceExtensions(std::vector<VkExtensionProperties>& availableDeviceExtensions) {
+bool getAvailableDeviceExtensions(DkPhysicalDevice& physDevice, std::vector<VkExtensionProperties>& availableDeviceExtensions) {
 	uint extensions_count;
 	availableDeviceExtensions.clear();
 	VkResult result = VK_SUCCESS;
-	result = vkEnumerateDeviceExtensionProperties(getPhysDevice(), nullptr, &extensions_count, nullptr);
+	result = vkEnumerateDeviceExtensionProperties(physDevice.get(), nullptr, &extensions_count, nullptr);
 	if (result != VK_SUCCESS || extensions_count == 0) {
 		std::cout << "Could not get the number of device extensions." << std::endl;
 		return false;
 	}
 	availableDeviceExtensions.resize(extensions_count);
-	result = vkEnumerateDeviceExtensionProperties(getPhysDevice(), nullptr, &extensions_count, availableDeviceExtensions.data());
+	result = vkEnumerateDeviceExtensionProperties(physDevice.get(), nullptr, &extensions_count, availableDeviceExtensions.data());
 	if (result != VK_SUCCESS || extensions_count == 0) {
 		std::cout << "Could not enumerate device extensions." << std::endl;
 		return false;

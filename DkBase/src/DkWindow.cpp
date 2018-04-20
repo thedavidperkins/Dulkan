@@ -1,4 +1,5 @@
 #include "DkWindow.h"
+#include "DkInstance.h"
 #include "DkApplication.h"
 #include "DkPhysicalDevice.h"
 #include "DkSemaphore.h"
@@ -44,7 +45,8 @@ LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 	return 0;
 }
 
-DkWindow::DkWindow(DkPhysicalDevice& physDevice) :
+DkWindow::DkWindow(DkInstance& instance, DkPhysicalDevice& physDevice) :
+	m_instance(instance),
 	m_physDevice(physDevice),
 	m_windowRect({ {50, 25}, {1280, 800} }),
 	m_windowParams({ NULL, NULL }),
@@ -85,7 +87,7 @@ bool DkWindow::init() {
 		return false;
 	}
 
-	m_windowParams.HWnd = CreateWindow(className, DkApplication::getInstance().getAppName().c_str(),
+	m_windowParams.HWnd = CreateWindow(className, m_instance.getAppName().c_str(),
 		WS_OVERLAPPEDWINDOW, m_windowRect.offset.x, m_windowRect.offset.y, m_windowRect.extent.width, 
 		m_windowRect.extent.height, nullptr, nullptr, m_windowParams.HInstance, nullptr);
 
@@ -102,7 +104,7 @@ bool DkWindow::init() {
 		m_windowParams.HWnd
 	};
 
-	if (vkCreateWin32SurfaceKHR(getVkInstance(), &surfInfo, nullptr, &m_presentSurface) != VK_SUCCESS
+	if (vkCreateWin32SurfaceKHR(m_instance.get(), &surfInfo, nullptr, &m_presentSurface) != VK_SUCCESS
 		|| m_presentSurface == VK_NULL_HANDLE) {
 		std::cout << "Failed to create present surface." << std::endl;
 		return false;
@@ -122,7 +124,7 @@ bool DkWindow::_refreshSurfaceCapabilities() {
 
 void DkWindow::finalize() {
 	if (m_presentSurface != VK_NULL_HANDLE) {
-		vkDestroySurfaceKHR(getVkInstance(), m_presentSurface, nullptr);
+		vkDestroySurfaceKHR(m_instance.get(), m_presentSurface, nullptr);
 		m_presentSurface = VK_NULL_HANDLE;
 	}
 	m_initialized = false;

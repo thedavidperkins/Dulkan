@@ -3,6 +3,7 @@
 
 #include "DkCommon.h"
 
+class DkInstance;
 class DkPhysicalDevice;
 class DkQueue;
 class DkSwapchain;
@@ -30,7 +31,7 @@ namespace {
 
 class DkWindow {
 public:
-	DkWindow(DkPhysicalDevice& physDevice);
+	DkWindow(DkInstance& instance, DkPhysicalDevice& physDevice);
 	~DkWindow() { finalize(); }
 
 	bool init();
@@ -66,6 +67,7 @@ private:
 	bool _refreshSurfaceCapabilities();
 
 	// Set on construction
+	DkInstance& m_instance;
 	DkPhysicalDevice& m_physDevice;
 
 	// Set before init

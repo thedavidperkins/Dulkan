@@ -42,7 +42,7 @@ bool DkDevice::init() {
 
 	// Check for extension support
 	std::vector<VkExtensionProperties> available;
-	if (!getAvailableDeviceExtensions(available)) return false;
+	if (!getAvailableDeviceExtensions(m_physDevice, available)) return false;
 	for (auto& ext : m_desiredExts) {
 		if (!IsExtensionSupported(available, ext)) return false;
 	}

@@ -4,10 +4,11 @@
 #include "DkCommon.h"
 
 class DkWindow;
+class DkInstance;
 
 class DkPhysicalDevice {
 public:
-	DkPhysicalDevice();
+	DkPhysicalDevice(DkInstance& instance);
 	~DkPhysicalDevice() { finalize(); }
 
 	bool init();
@@ -25,6 +26,7 @@ public:
 	DkPhysicalDevice& operator=(const DkPhysicalDevice& rhs) = delete;
 private:
 	// set by init
+	DkInstance& m_instance;
 	VkPhysicalDevice m_physDevice;
 	VkPhysicalDeviceMemoryProperties m_memProps;
 	VkPhysicalDeviceFeatures m_features;

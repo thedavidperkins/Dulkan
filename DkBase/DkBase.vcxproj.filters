@@ -16,9 +16,6 @@
     <Filter Include="Inline Files">
       <UniqueIdentifier>{c82f1931-edaa-4c0d-869d-1ee9cf5ec88e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{3c5369c2-0258-4b74-83a3-591c553d34bf}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\DkApplication.h">
@@ -177,12 +174,6 @@
   <ItemGroup>
     <None Include="include\inline\ListOfVulkanFunctions.inl">
       <Filter>Inline Files</Filter>
-    </None>
-    <None Include="shaders\frag.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\vert.vert">
-      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

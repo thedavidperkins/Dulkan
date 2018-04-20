@@ -1,9 +1,9 @@
 #define MAIN_SRC
 #include "DkCommon.h"
-#include "DkApplication.h"
+#include "DkSampleApplication.h"
 
 int main() {
-	DkApplication& app = DkApplication::getInstance();
+	DkSampleApplication app;
 	if (!app.init()) std::cout << "Mission failed." << std::endl;
 	else {
 		app.render();

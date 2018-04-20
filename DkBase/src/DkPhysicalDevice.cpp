@@ -1,8 +1,10 @@
 #include "DkPhysicalDevice.h"
 #include "DkApplication.h"
 #include "DkWindow.h"
+#include "DkInstance.h"
 
-DkPhysicalDevice::DkPhysicalDevice() :
+DkPhysicalDevice::DkPhysicalDevice(DkInstance& instance) :
+	m_instance(instance),
 	m_physDevice(VK_NULL_HANDLE),
 	m_memProps(),
 	m_properties(),
@@ -17,12 +19,12 @@ bool DkPhysicalDevice::init() {
 	}
 	uint numDevices = 0;
 	std::vector<VkPhysicalDevice> available;
-	if (vkEnumeratePhysicalDevices(getVkInstance(), &numDevices, nullptr) != VK_SUCCESS || numDevices == 0) {
+	if (vkEnumeratePhysicalDevices(m_instance.get(), &numDevices, nullptr) != VK_SUCCESS || numDevices == 0) {
 		std::cout << "Failed to find any physical devices." << std::endl;
 		return false;
 	}
 	available.resize(numDevices);
-	if (vkEnumeratePhysicalDevices(getVkInstance(), &numDevices, available.data()) != VK_SUCCESS || numDevices == 0) {
+	if (vkEnumeratePhysicalDevices(m_instance.get(), &numDevices, available.data()) != VK_SUCCESS || numDevices == 0) {
 		std::cout << "Failed to enumerate physical devices." << std::endl;
 		return false;
 	}
