@@ -10,6 +10,7 @@ DkPipeline::DkPipeline(DkDevice& device, DkRenderPass& renderPass) :
 	m_createFlags(0),
 	m_shaders(),
 	m_meshes(),
+	m_pushConstantRanges(),
 	m_topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST),
 	m_polygonMode(VK_POLYGON_MODE_FILL),
 	m_cullMode(0),
@@ -85,6 +86,14 @@ bool DkPipeline::addShader(const std::string& sourceFile, VkShaderStageFlagBits 
 
 	m_shaders.push_back(toAdd);
 	return true;
+}
+
+void DkPipeline::addPushConstantRange(VkShaderStageFlags stage, uint offset, uint size) {
+	if (m_initialized) {
+		std::cout << "Cannot add push constant range after initialization." << std::endl;
+		return;
+	}
+	m_pushConstantRanges.push_back({ stage, offset, size });
 }
 
 void DkPipeline::setDepthTestEnabled(bool enabled) {
@@ -230,16 +239,16 @@ bool DkPipeline::init() {
 		dynStates.data()
 	};
 
-	VkPipelineLayoutCreateInfo emptyLayoutInfo = {
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
 		VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 		nullptr,
 		0,
-		0,			// descriptor set layout count
-		nullptr,	// descriptor set layouts
-		0,			// push constant range count
-		nullptr		// push constant ranges
+		0,									// descriptor set layout count
+		nullptr,							// descriptor set layouts
+		(uint)m_pushConstantRanges.size(),
+		m_pushConstantRanges.data()
 	};
-	if (vkCreatePipelineLayout(m_device.get(), &emptyLayoutInfo, nullptr, &m_layout) != VK_SUCCESS || m_layout == VK_NULL_HANDLE) {
+	if (vkCreatePipelineLayout(m_device.get(), &pipelineLayoutInfo, nullptr, &m_layout) != VK_SUCCESS || m_layout == VK_NULL_HANDLE) {
 		std::cout << "Failed to create pipeline layout." << std::endl;
 		return false;
 	}

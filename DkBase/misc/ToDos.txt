@@ -1,6 +1,7 @@
 HIGH PRIORITY:
 ==============
 Add non-trivial descriptor set layouts
+Add non-trivial push constants
 	
 LOW PRIORITY:
 =============

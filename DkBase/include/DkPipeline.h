@@ -29,6 +29,7 @@ public:
 
 	bool addShader(const std::string& sourceFile, VkShaderStageFlagBits stage);
 	void addMesh(DkMesh* mesh);
+	void addPushConstantRange(VkShaderStageFlags stage, uint offset, uint size);
 
 	// Getters
 	VkPipeline& get() { return m_pipeline; }
@@ -47,6 +48,7 @@ private:
 	VkPipelineCreateFlags m_createFlags;
 	std::vector<DkShader*> m_shaders;
 	std::vector<DkMesh*> m_meshes;
+	std::vector<VkPushConstantRange> m_pushConstantRanges;
 	VkPrimitiveTopology m_topology;
 	VkPolygonMode m_polygonMode;
 	VkCullModeFlags m_cullMode;
