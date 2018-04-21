@@ -1,8 +1,8 @@
-#include "DkSampleApplication.h"
+#include "DkSample_Triangle.h"
 #include "DkAttachmentDescriptionBuilder.h"
 #include "DkCommandBuffer.h"
 
-DkSampleApplication::DkSampleApplication() :
+DkSample_Triangle::DkSample_Triangle() :
 	DkApplication(),
 	m_frameCount(3),
 	m_swapchain(getDevice(), getWindow()),
@@ -14,7 +14,7 @@ DkSampleApplication::DkSampleApplication() :
 	m_curFrame(0)
 {}
 
-void DkSampleApplication::setFrameCount(uint count) {
+void DkSample_Triangle::setFrameCount(uint count) {
 	if (m_initialized) {
 		std::cout << "Cannot set frame count after initialization." << std::endl;
 		return;
@@ -22,7 +22,7 @@ void DkSampleApplication::setFrameCount(uint count) {
 	m_frameCount = count;
 }
 
-bool DkSampleApplication::init() {
+bool DkSample_Triangle::init() {
 	if (!vulkanInit()) return false;
 
 	// Init swapchain
@@ -98,7 +98,7 @@ bool DkSampleApplication::init() {
 	return true;
 }
 
-bool DkSampleApplication::draw() {
+bool DkSample_Triangle::draw() {
 	DkFrameResources& frame = *(m_frames[m_curFrame]);
 	if (!frame.reset()) return false;
 
@@ -164,7 +164,7 @@ bool DkSampleApplication::draw() {
 	return true;
 }
 
-void DkSampleApplication::finalize() {
+void DkSample_Triangle::finalize() {
 	m_pipeline.finalize();
 	if (m_triangle != nullptr) {
 		delete m_triangle;
@@ -182,6 +182,6 @@ void DkSampleApplication::finalize() {
 	m_initialized = false;
 }
 
-bool DkSampleApplication::resize() {
+bool DkSample_Triangle::resize() {
 	return m_swapchain.resize();
 }

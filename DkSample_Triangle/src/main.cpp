@@ -1,9 +1,9 @@
 #define MAIN_SRC
 #include "DkCommon.h"
-#include "DkSampleApplication.h"
+#include "DkSample_Triangle.h"
 
 int main() {
-	DkSampleApplication app;
+	DkSample_Triangle app;
 	if (!app.init()) std::cout << "Mission failed." << std::endl;
 	else {
 		app.render();

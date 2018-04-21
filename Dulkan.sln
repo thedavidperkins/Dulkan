@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DkBase", "DkBase\DkBase.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DkBaseTests", "DkBaseTests\DkBaseTests.vcxproj", "{27552E5F-B644-4A40-BC57-ED658ADE5231}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DkSampleApplication", "DkSampleApplication\DkSampleApplication.vcxproj", "{70D44107-380F-477C-9174-FC3C44333A13}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DkSample_Triangle", "DkSample_Triangle\DkSample_Triangle.vcxproj", "{70D44107-380F-477C-9174-FC3C44333A13}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9FAA2EC1-6DDE-4186-94D0-7FC83322069E} = {9FAA2EC1-6DDE-4186-94D0-7FC83322069E}
 	EndProjectSection

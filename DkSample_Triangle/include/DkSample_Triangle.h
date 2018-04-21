@@ -1,9 +1,9 @@
-#ifndef DK_SAMPLE_APPLICATION
-#define DK_SAMPLE_APPLICATION
+#ifndef DK_SAMPLE_TRIANGLE
+#define DK_SAMPLE_TRIANGLE
 
 #include "DkApplication.h"
 
-class DkSampleApplication : public DkApplication {
+class DkSample_Triangle : public DkApplication {
 public:
 	virtual bool init();
 	virtual bool draw();
@@ -13,8 +13,8 @@ public:
 	// Setters
 	void setFrameCount(uint count);
 
-	DkSampleApplication();
-	virtual ~DkSampleApplication() { finalize(); }
+	DkSample_Triangle();
+	virtual ~DkSample_Triangle() { finalize(); }
 private:
 	// Options
 	uint m_frameCount;
@@ -32,6 +32,6 @@ private:
 
 };
 
-#endif//DK_SAMPLE_APPLICATION
+#endif//DK_SAMPLE_TRIANGLE
 
 
