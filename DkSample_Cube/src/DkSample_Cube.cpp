@@ -2,6 +2,8 @@
 #include "DkAttachmentDescriptionBuilder.h"
 #include "DkCommandBuffer.h"
 
+using namespace math;
+
 DkSample_Cube::DkSample_Cube() :
 	DkApplication(),
 	m_frameCount(3),
@@ -9,7 +11,7 @@ DkSample_Cube::DkSample_Cube() :
 	m_renderPass(getDevice()),
 	m_frames(),
 	m_pipeline(getDevice(), m_renderPass),
-	m_triangle(nullptr),
+	m_cube(nullptr),
 	m_initialized(false),
 	m_curFrame(0)
 {}
@@ -81,17 +83,37 @@ bool DkSample_Cube::init() {
 	if (!m_pipeline.addShader("shaders/vert.spv", VK_SHADER_STAGE_VERTEX_BIT)) return false;
 	if (!m_pipeline.addShader("shaders/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)) return false;
 
-	m_triangle = new DkMesh(nullptr);
-	m_triangle->addVerts({
-		{   0.f, -.75f, 0.f },
-		{ -.75f,  .75f, 0.f },
-		{  .75f,  .75f, 0.f }
-		});
+	m_cube = new DkMesh(nullptr);
+
+	vec3 trf(1.f, 1.f, -1.f);
+	vec3 trb(1.f, 1.f, 1.f);
+	vec3 tlf(-1.f, 1.f, -1.f);
+	vec3 tlb(-1.f, 1.f, 1.f);
+	vec3 brf(1.f, -1.f, -1.f);
+	vec3 brb(1.f, -1.f, 1.f);
+	vec3 blf(-1.f, -1.f, -1.f);
+	vec3 blb(-1.f, -1.f, 1.f);
+
+	m_cube->addVerts({
+		trf, trb, brb,
+		brb, brf, trf,
+		tlb, tlf, blf,
+		blf, blb, tlb,
+		tlf, trf, brf,
+		brf, blf, tlf,
+		blb, brb, trb,
+		trb, tlb, blb,
+		trf, tlf, tlb,
+		tlb, trb, trf,
+		brb, blb, blf,
+		blf, brf, brb
+	});
+
 	DkCommandBuffer* bfr = getCommandPool(DK_GRAPHICS_QUEUE)->allocate(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-	if (!m_triangle->initBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE))) return false;
+	if (!m_cube->initBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE))) return false;
 	getCommandPool(DK_GRAPHICS_QUEUE)->freeBuffer(bfr);
 
-	m_pipeline.addMesh(m_triangle);
+	m_pipeline.addMesh(m_cube);
 	if (!m_pipeline.init()) return false;
 
 	m_initialized = true;
@@ -130,8 +152,8 @@ bool DkSample_Cube::draw() {
 	if (!cmdBfr->bindPipeline(&m_pipeline)) return false;
 	if (!cmdBfr->setViewport(0, { { 0.f, 0.f, (float)getWindow().getExtent().width, (float)getWindow().getExtent().height, 0.f, 1.f } })) return false;
 	if (!cmdBfr->setScissor(0, { { { 0, 0 },{ getWindow().getExtent().width, getWindow().getExtent().height } } })) return false;
-	if (!cmdBfr->bindVertexBuffers({ m_triangle })) return false;
-	if (!cmdBfr->draw(m_triangle)) return false;
+	if (!cmdBfr->bindVertexBuffers({ m_cube })) return false;
+	if (!cmdBfr->draw(m_cube)) return false;
 	if (!cmdBfr->endRenderPass()) return false;
 
 	if (getQueue(DK_GRAPHICS_QUEUE).getFamilyIndex() != getQueue(DK_PRESENT_QUEUE).getFamilyIndex()) {
@@ -166,9 +188,9 @@ bool DkSample_Cube::draw() {
 
 void DkSample_Cube::finalize() {
 	m_pipeline.finalize();
-	if (m_triangle != nullptr) {
-		delete m_triangle;
-		m_triangle = nullptr;
+	if (m_cube != nullptr) {
+		delete m_cube;
+		m_cube = nullptr;
 	}
 	m_renderPass.finalize();
 	m_swapchain.finalize();

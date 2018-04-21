@@ -24,7 +24,7 @@ private:
 	DkRenderPass m_renderPass;
 	std::vector<DkFrameResources*> m_frames;
 	DkPipeline m_pipeline;
-	DkMesh* m_triangle;
+	DkMesh* m_cube;
 
 	// State
 	bool m_initialized;
