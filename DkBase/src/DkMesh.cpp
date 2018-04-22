@@ -10,7 +10,7 @@ DkMesh::DkMesh(DkBuffer* buffer) :
 	m_verts()
 {}
 
-void DkMesh::addVerts(const std::vector<vec3>& verts) {
+void DkMesh::addVerts(const std::vector<DkVertex>& verts) {
 	m_verts.insert(m_verts.end(), verts.begin(), verts.end());
 }
 
@@ -21,15 +21,22 @@ void DkMesh::getPipelineCreateInfo(
 ) {
 	bindingDescription.push_back({
 		bindingIndex,
-		sizeof(vec3),
+		sizeof(DkVertex),
 		VK_VERTEX_INPUT_RATE_VERTEX
 	});
 
 	attributeDescriptions.push_back({
 		0,
 		bindingIndex,
-		VK_FORMAT_R32G32B32_SFLOAT,
+		VK_FORMAT_R32G32B32A32_SFLOAT,
 		0
+	});
+
+	attributeDescriptions.push_back({
+		1,
+		bindingIndex,
+		VK_FORMAT_R32G32B32A32_SFLOAT,
+		offsetof(DkVertex, color)
 	});
 
 	m_bindIndex = bindingIndex;
@@ -46,7 +53,7 @@ bool DkMesh::initBuffer(DkDevice& device, DkCommandBuffer* bfr, DkQueue& queue) 
 	}
 
 	m_buffer = new DkBuffer(device, nullptr);
-	m_buffer->setSize(sizeof(vec3) * m_verts.size());
+	m_buffer->setSize(sizeof(DkVertex) * m_verts.size());
 	m_buffer->setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 	if (!m_buffer->init()) return false;
 	if (!m_buffer->pushData((uint)m_buffer->getSize(), m_verts.data(), bfr, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,

@@ -82,21 +82,21 @@ namespace math {
 		mat4 look(
 			u[0], u[1], u[2], -dot(u, eye),
 			v[0], v[1], v[2], -dot(v, eye),
-			w[0], w[1], w[2], -dot(v, eye),
-			0.f, 0.f, 0.f, 1.f
+			w[0], w[1], w[2], -dot(w, eye),
+			 0.f,  0.f,  0.f,          1.f
 		);
 
 		return look;
 	}
 
 	mat<4, 4> perspective(float fovy, float aspect, float zNear, float zFar) {
-		float d = 1 / tan(fovy * PI / 180.f / 2.f);
-		float A = (zNear + zFar) / (zNear - zFar);
-		float B = 2 * zFar * zNear / (zNear - zFar);
+		float d = 1.f / tan((fovy * PI / 180.f) / 2.f);
+		float A = zFar / (zNear - zFar);
+		float B = zFar * zNear / (zNear - zFar);
 
 		return mat4(
 			d / aspect, 0.f,  0.f, 0.f,
-			       0.f,   d,  0.f, 0.f,
+			       0.f,  -d,  0.f, 0.f,
 			       0.f, 0.f,    A,   B,
 			       0.f, 0.f, -1.f, 0.f
 		);

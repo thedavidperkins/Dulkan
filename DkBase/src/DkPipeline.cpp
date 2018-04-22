@@ -13,7 +13,7 @@ DkPipeline::DkPipeline(DkDevice& device, DkRenderPass& renderPass) :
 	m_pushConstantRanges(),
 	m_topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST),
 	m_polygonMode(VK_POLYGON_MODE_FILL),
-	m_cullMode(0),
+	m_cullMode(VK_CULL_MODE_NONE),
 	m_frontFace(VK_FRONT_FACE_CLOCKWISE),
 	m_depthTestEnabled(false),
 	m_layout(VK_NULL_HANDLE),
@@ -301,4 +301,12 @@ void DkPipeline::finalize() {
 		m_layout = VK_NULL_HANDLE;
 	}
 	m_initialized = false;
+}
+
+VkPushConstantRange DkPipeline::getPushConstantRangeInfo(uint index) {
+	if (index >= m_pushConstantRanges.size()) {
+		std::cout << "Invalid push constant range index." << std::endl;
+		return { 0, 0, 0 };
+	}
+	return m_pushConstantRanges[index];
 }

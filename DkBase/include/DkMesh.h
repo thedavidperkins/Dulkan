@@ -9,6 +9,11 @@ class DkDevice;
 class DkQueue;
 class DkCommandBuffer;
 
+struct DkVertex {
+	math::vec4 vert;
+	math::vec4 color;
+};
+
 class DkMesh {
 public:
 	bool initBuffer(DkDevice& device, DkCommandBuffer* bfr, DkQueue& queue);
@@ -26,7 +31,7 @@ public:
 	uint getVertCount() { return (uint)m_verts.size(); }
 
 	// Setters
-	void addVerts(const std::vector<math::vec3>& verts);
+	void addVerts(const std::vector<DkVertex>& verts);
 
 	DkMesh(DkBuffer* buffer);
 	~DkMesh() { finalize(); }
@@ -36,7 +41,7 @@ private:
 	uint m_bindIndex;
 	DkBuffer* m_buffer;
 	bool m_extBuffer;
-	std::vector<math::vec3> m_verts;
+	std::vector<DkVertex> m_verts;
 };
 
 #endif//DK_MESH_H

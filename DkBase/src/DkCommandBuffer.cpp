@@ -61,6 +61,22 @@ bool DkCommandBuffer::beginRecording(VkCommandBufferUsageFlags usage) {
 	return true;
 }
 
+bool DkCommandBuffer::pushConstants(DkPipeline& pipeline, uint index, const void* data) {
+	if (!m_recording) {
+		std::cout << "Cannot push constants: Command buffer recording not yet initiated." << std::endl;
+		return false;
+	}
+
+	VkPushConstantRange range = pipeline.getPushConstantRangeInfo(index);
+	if (range.stageFlags == 0) {
+		std::cout << "An error occurred while getting push constant range info." << std::endl;
+		return false;
+	}
+
+	vkCmdPushConstants(m_commandBuffer, pipeline.getLayoutHandle(), range.stageFlags, range.offset, range.size, data);
+	return true;
+}
+
 bool DkCommandBuffer::setMemoryBarrier(
 	VkPipelineStageFlags producingStage,
 	VkPipelineStageFlags consumingStage,

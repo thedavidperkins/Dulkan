@@ -53,6 +53,7 @@ public:
 
 	// Sending commands
 	bool beginRecording(VkCommandBufferUsageFlags usage = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+	bool pushConstants(DkPipeline& pipeline, uint index, const void* data);
 	bool setMemoryBarrier(
 		VkPipelineStageFlags producingStage,
 		VkPipelineStageFlags consumingStage,

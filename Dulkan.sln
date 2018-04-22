@@ -13,6 +13,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DkSample_Triangle", "DkSamp
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DkSample_Cube", "DkSample_Cube\DkSample_Cube.vcxproj", "{073C2494-8F42-437A-AA8A-5F374E219542}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9FAA2EC1-6DDE-4186-94D0-7FC83322069E} = {9FAA2EC1-6DDE-4186-94D0-7FC83322069E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

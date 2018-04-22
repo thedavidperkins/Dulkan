@@ -25,6 +25,7 @@ void DkSample_Cube::setFrameCount(uint count) {
 }
 
 bool DkSample_Cube::init() {
+	getWindow().setWindowRect({ { 0, 0 }, { 1080, 1080 } });
 	if (!vulkanInit()) return false;
 
 	// Init swapchain
@@ -32,17 +33,22 @@ bool DkSample_Cube::init() {
 
 	// Init frames -- the actual framebuffers will be created later, in the animation loop
 	for (uint iter = 0; iter < m_frameCount; ++iter) {
-		DkFrameResources* newFrame = new DkFrameResources(getDevice(), &m_swapchain, &m_renderPass);
+		DkFrameResources* newFrame = new DkFrameResources(getDevice(), &m_swapchain, &m_renderPass, true);
 		if (!newFrame->init()) return false;
 		m_frames.push_back(newFrame);
 	}
 	if (!getCommandPool(DK_GRAPHICS_QUEUE)->allocate(m_frames)) return false;
 
 	m_renderPass.addAttachmentDescription(DkAttachmentDescriptionBuilder::basicColorOutputAttachment());
+	m_renderPass.addAttachmentDescription(DkAttachmentDescriptionBuilder::basicDepthAttachment());
 
 	VkAttachmentReference attRef = {
 		0,
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+	};
+	VkAttachmentReference depthRef = {
+		1,
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 	};
 
 	m_renderPass.addSubpassDescription({
@@ -53,7 +59,7 @@ bool DkSample_Cube::init() {
 		1,
 		&attRef,
 		nullptr,
-		nullptr,
+		&depthRef,
 		0,
 		nullptr
 		});
@@ -80,40 +86,49 @@ bool DkSample_Cube::init() {
 
 	if (!m_renderPass.init()) return false;
 
-	if (!m_pipeline.addShader("shaders/vert.spv", VK_SHADER_STAGE_VERTEX_BIT)) return false;
-	if (!m_pipeline.addShader("shaders/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)) return false;
+	if (!m_pipeline.addShader("E:/VisualStudio/Projects/Dulkan/DkSample_Cube/shaders/vert.spv", VK_SHADER_STAGE_VERTEX_BIT)) return false;
+	if (!m_pipeline.addShader("E:/VisualStudio/Projects/Dulkan/DkSample_Cube/shaders/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)) return false;
 
 	m_cube = new DkMesh(nullptr);
 
-	vec3 trf(1.f, 1.f, -1.f);
-	vec3 trb(1.f, 1.f, 1.f);
-	vec3 tlf(-1.f, 1.f, -1.f);
-	vec3 tlb(-1.f, 1.f, 1.f);
-	vec3 brf(1.f, -1.f, -1.f);
-	vec3 brb(1.f, -1.f, 1.f);
-	vec3 blf(-1.f, -1.f, -1.f);
-	vec3 blb(-1.f, -1.f, 1.f);
+	vec4 trf( 1.f,  1.f, -1.f,  1.f);
+	vec4 trb( 1.f,  1.f,  1.f,  1.f);
+	vec4 tlf(-1.f,  1.f, -1.f,  1.f);
+	vec4 tlb(-1.f,  1.f,  1.f,  1.f);
+	vec4 brf( 1.f, -1.f, -1.f,  1.f);
+	vec4 brb( 1.f, -1.f,  1.f,  1.f);
+	vec4 blf(-1.f, -1.f, -1.f,  1.f);
+	vec4 blb(-1.f, -1.f,  1.f,  1.f);
+
+	vec4 topCol(1.f, 0.f, 0.f, 1.f); // red
+	vec4 botCol(1.f, 1.f, 0.f, 1.f); // yellow
+	vec4 rigCol(1.f, 0.f, 1.f, 1.f); // magenta
+	vec4 lefCol(0.f, 1.f, 1.f, 1.f); // cyan
+	vec4 bacCol(0.f, 1.f, 0.f, 1.f); // green
+	vec4 froCol(0.f, 0.f, 1.f, 1.f); // blue
 
 	m_cube->addVerts({
-		trf, trb, brb,
-		brb, brf, trf,
-		tlb, tlf, blf,
-		blf, blb, tlb,
-		tlf, trf, brf,
-		brf, blf, tlf,
-		blb, brb, trb,
-		trb, tlb, blb,
-		trf, tlf, tlb,
-		tlb, trb, trf,
-		brb, blb, blf,
-		blf, brf, brb
+		{ trf, rigCol }, { trb, rigCol }, { brb, rigCol },
+		{ brb, rigCol }, { brf, rigCol }, { trf, rigCol }, // right side
+		{ tlb, lefCol }, { tlf, lefCol }, { blf, lefCol },
+		{ blf, lefCol }, { blb, lefCol }, { tlb, lefCol }, // left side
+		{ tlf, froCol }, { trf, froCol }, { brf, froCol },
+		{ brf, froCol }, { blf, froCol }, { tlf, froCol }, // front side
+		{ blb, bacCol }, { brb, bacCol }, { trb, bacCol },
+		{ trb, bacCol }, { tlb, bacCol }, { blb, bacCol }, // back side
+		{ trf, topCol }, { tlf, topCol }, { tlb, topCol },
+		{ tlb, topCol }, { trb, topCol }, { trf, topCol }, // top side
+		{ brb, botCol }, { blb, botCol }, { blf, botCol },
+		{ blf, botCol }, { brf, botCol }, { brb, botCol }  // bottom side
 	});
 
 	DkCommandBuffer* bfr = getCommandPool(DK_GRAPHICS_QUEUE)->allocate(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 	if (!m_cube->initBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE))) return false;
 	getCommandPool(DK_GRAPHICS_QUEUE)->freeBuffer(bfr);
 
+	m_pipeline.addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mat4));
 	m_pipeline.addMesh(m_cube);
+	m_pipeline.setDepthTestEnabled(true);
 	if (!m_pipeline.init()) return false;
 
 	m_initialized = true;
@@ -148,7 +163,20 @@ bool DkSample_Cube::draw() {
 			)) return false;
 	}
 
-	if (!cmdBfr->beginRenderPass(&m_renderPass, &frame.getFramebuffer(), { { .1f, .2f, .3f, 1.f } })) return false;
+	vec3 eye(4.f, 5.f, 4.f);
+	vec3 center(0.f, 0.f, 0.f);
+	vec3 up(0.f, 1.f, 0.f);
+
+	VkExtent2D ext = getWindow().getExtent();
+	mat4 look = lookAt(eye, center, up);
+	mat4 persp = perspective(45.f, (float)ext.width / (float)ext.height, .1f, 100.f);
+	mat4 transform = persp * look;
+
+	if (!cmdBfr->pushConstants(m_pipeline, 0, (void*)&transpose(transform))) return false;
+	VkClearValue clearCol, clearDepth;
+	clearCol.color = { .1f, .2f, .3f, 1.f };
+	clearDepth.depthStencil = { 1.f, 0 };
+	if (!cmdBfr->beginRenderPass(&m_renderPass, &frame.getFramebuffer(), { clearCol, clearDepth })) return false;
 	if (!cmdBfr->bindPipeline(&m_pipeline)) return false;
 	if (!cmdBfr->setViewport(0, { { 0.f, 0.f, (float)getWindow().getExtent().width, (float)getWindow().getExtent().height, 0.f, 1.f } })) return false;
 	if (!cmdBfr->setScissor(0, { { { 0, 0 },{ getWindow().getExtent().width, getWindow().getExtent().height } } })) return false;
@@ -205,5 +233,9 @@ void DkSample_Cube::finalize() {
 }
 
 bool DkSample_Cube::resize() {
-	return m_swapchain.resize();
+	if (!m_swapchain.resize()) return false;
+	for (auto& frame : m_frames) {
+		if (!frame->resize()) return false;
+	}
+	return true;
 }

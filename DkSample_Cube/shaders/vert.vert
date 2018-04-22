@@ -1,13 +1,14 @@
 #version 450
 
 layout (location = 0) in vec4 app_position;
+layout (location = 1) in vec4 inColor;
+layout (location = 0) out vec4 outColor;
 
-//layout (push_constant) uniform my_matrices_t {
-//	mat4 modelview;
-//	mat4 perspective;
-//} my_matrices;
+layout (std430, push_constant) uniform my_matrix_t {
+	mat4 perspective;
+} my_matrix;
 
 void main() {
-	//gl_Position = my_matrices.perspective * my_matrices.modelview * app_position;
-	gl_Position = app_position;
+	gl_Position = my_matrix.perspective * app_position;
+	outColor = inColor;
 }

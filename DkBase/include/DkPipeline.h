@@ -33,6 +33,8 @@ public:
 
 	// Getters
 	VkPipeline& get() { return m_pipeline; }
+	VkPipelineLayout getLayoutHandle() { return m_layout; }
+	VkPushConstantRange getPushConstantRangeInfo(uint index);
 
 	DkPipeline(DkDevice& device, DkRenderPass& renderPass);
 	virtual ~DkPipeline() { finalize(); }

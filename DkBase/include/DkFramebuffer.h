@@ -8,6 +8,7 @@ class DkSwapchain;
 class DkRenderPass;
 class DkSemaphore;
 class DkWindow;
+class DkImageView;
 
 class DkFramebuffer {
 public:
@@ -24,7 +25,8 @@ public:
 		DkDevice& device,
 		DkSwapchain* swapchain,
 		DkRenderPass* renderPass,
-		DkSemaphore* imageAcquiredSemaphore
+		DkSemaphore* imageAcquiredSemaphore,
+		DkImageView* depthImg
 	);
 	~DkFramebuffer() { finalize(); };
 private:
@@ -33,7 +35,7 @@ private:
 	DkSwapchain* m_swapchain;
 	DkRenderPass* m_renderPass;
 	DkSemaphore* m_imageAcquiredSemaphore;
-	DkWindow* m_window;
+	DkImageView* m_depthImg;
 
 	// Set by init
 	VkFramebuffer m_framebuffer;

@@ -17,7 +17,7 @@ VkAttachmentDescription DkAttachmentDescriptionBuilder::basicColorOutputAttachme
 VkAttachmentDescription DkAttachmentDescriptionBuilder::basicDepthAttachment() {
 	return {
 		0,													// flags
-		VK_FORMAT_D16_UNORM,								// format
+		VK_FORMAT_D32_SFLOAT,								// format
 		VK_SAMPLE_COUNT_1_BIT,								// sample count
 		VK_ATTACHMENT_LOAD_OP_CLEAR,						// load op
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,					// store op

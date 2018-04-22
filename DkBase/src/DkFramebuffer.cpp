@@ -3,18 +3,22 @@
 #include "DkSwapchain.h"
 #include "DkRenderPass.h"
 #include "DkWindow.h"
+#include "DkImageView.h"
 
 DkFramebuffer::DkFramebuffer(
 	DkDevice& device,
 	DkSwapchain* swapchain,
 	DkRenderPass* renderPass,
-	DkSemaphore* imageAcquiredSemaphore
+	DkSemaphore* imageAcquiredSemaphore,
+	DkImageView* depthImg
 ) :
 	m_device(device),
 	m_swapchain(swapchain),
 	m_renderPass(renderPass),
 	m_imageAcquiredSemaphore(imageAcquiredSemaphore),
+	m_depthImg(depthImg),
 	m_framebuffer(VK_NULL_HANDLE),
+	m_frameSize(),
 	m_imgIndex(0),
 	m_initialized(false)
 {}
@@ -29,6 +33,11 @@ bool DkFramebuffer::init() {
 
 	if (attachment == nullptr) return false;
 
+	std::vector<VkImageView> attachments({ attachment->get() });
+	if (m_depthImg != nullptr) {
+		attachments.push_back(m_depthImg->get());
+	}
+
 	m_frameSize = m_swapchain->getImgSize();
 
 	VkFramebufferCreateInfo fbInfo = {
@@ -36,8 +45,8 @@ bool DkFramebuffer::init() {
 		nullptr,
 		0,
 		m_renderPass->get(),
-		1,							// number of attachments
-		&attachment->get(),
+		(uint)attachments.size(),
+		attachments.data(),
 		m_frameSize.width,
 		m_frameSize.height,
 		1							// layers

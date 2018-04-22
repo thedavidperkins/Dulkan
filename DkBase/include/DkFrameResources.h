@@ -29,26 +29,31 @@ public:
 	DkFence& getFence() { return m_drawDoneFence; }
 
 	bool reset();
+	bool resize();
 
 	DkFrameResources(
 		DkDevice& device,
 		DkSwapchain* swapchain,
-		DkRenderPass* renderPass
+		DkRenderPass* renderPass,
+		bool useDepth
 	);
 	~DkFrameResources() { finalize(); }
 
 private:
+	bool _initDepthAttachment();
 	bool _waitDrawDone();
 	
 	// Set on construction
 	DkDevice& m_device;
 	DkSwapchain* m_swapchain;
+	bool m_useDepth;
 
 	// Set by init
 	DkSemaphore m_imgAcqSemaphore;
 	DkSemaphore m_rdyPrsSemaphore;
 	DkFence m_drawDoneFence;
 	DkImageView m_depthAttachment;
+	bool m_initialized;
 
 	// Set independently
 	DkCommandBuffer* m_cmdBfr;

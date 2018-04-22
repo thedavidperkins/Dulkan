@@ -30,7 +30,7 @@ bool DkSample_Triangle::init() {
 
 	// Init frames -- the actual framebuffers will be created later, in the animation loop
 	for (uint iter = 0; iter < m_frameCount; ++iter) {
-		DkFrameResources* newFrame = new DkFrameResources(getDevice(), &m_swapchain, &m_renderPass);
+		DkFrameResources* newFrame = new DkFrameResources(getDevice(), &m_swapchain, &m_renderPass, false);
 		if (!newFrame->init()) return false;
 		m_frames.push_back(newFrame);
 	}
@@ -83,9 +83,9 @@ bool DkSample_Triangle::init() {
 
 	m_triangle = new DkMesh(nullptr);
 	m_triangle->addVerts({
-		{   0.f, -.75f, 0.f },
-		{ -.75f,  .75f, 0.f },
-		{  .75f,  .75f, 0.f }
+		{ {   0.f, -.75f, 0.f, 1.f }, {} },
+		{ { -.75f,  .75f, 0.f, 1.f }, {} },
+		{ {  .75f,  .75f, 0.f, 1.f }, {} }
 		});
 	DkCommandBuffer* bfr = getCommandPool(DK_GRAPHICS_QUEUE)->allocate(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 	if (!m_triangle->initBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE))) return false;
