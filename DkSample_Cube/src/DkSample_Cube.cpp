@@ -127,7 +127,7 @@ bool DkSample_Cube::init() {
 	});
 
 	DkCommandBuffer* bfr = getCommandPool(DK_GRAPHICS_QUEUE)->allocate(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-	if (!m_cube->initBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE))) return false;
+	if (!m_cube->initVertBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE))) return false;
 	getCommandPool(DK_GRAPHICS_QUEUE)->freeBuffer(bfr);
 
 	m_pipeline.addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mat4));

@@ -96,6 +96,9 @@
     <ClInclude Include="include\DkAttachmentDescriptionBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\DkUniformBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\VulkanFunctions.cpp">

@@ -40,6 +40,7 @@
     <ClInclude Include="include\DkSemaphore.h" />
     <ClInclude Include="include\DkShader.h" />
     <ClInclude Include="include\DkSwapchain.h" />
+    <ClInclude Include="include\DkUniformBuffer.h" />
     <ClInclude Include="include\DkUtils.h" />
     <ClInclude Include="include\DkWindow.h" />
     <ClInclude Include="include\DkCommandPool.h" />

@@ -8,6 +8,8 @@ class DkBuffer;
 class DkDevice;
 class DkQueue;
 class DkCommandBuffer;
+class DkUniformBuffer;
+class DkSemaphore;
 
 struct DkVertex {
 	math::vec4 vert;
@@ -16,7 +18,7 @@ struct DkVertex {
 
 class DkMesh {
 public:
-	bool initBuffer(DkDevice& device, DkCommandBuffer* bfr, DkQueue& queue);
+	bool initVertBuffer(DkDevice& device, DkCommandBuffer* bfr, DkQueue& queue);
 	void finalizeBuffer();
 	void finalize();
 
@@ -26,12 +28,15 @@ public:
 		std::vector<VkVertexInputBindingDescription>& bindingDescription,
 		std::vector<VkVertexInputAttributeDescription>& attributeDescriptions
 	);
-	DkBuffer* getBuffer() { return m_buffer; }
+	DkBuffer* getVertBuffer() { return m_vertBuffer; }
 	uint getBindingIndex() { return m_bindIndex; }
 	uint getVertCount() { return (uint)m_verts.size(); }
 
 	// Setters
 	void addVerts(const std::vector<DkVertex>& verts);
+	void setMVP(const math::mat4& mvp) { m_MVP = mvp; }
+
+	bool pushMVP(DkCommandBuffer* bfr, DkQueue& queue, const std::vector<DkSemaphore*>& signalSemaphores = {});
 
 	DkMesh(DkBuffer* buffer);
 	~DkMesh() { finalize(); }
@@ -39,7 +44,9 @@ public:
 	DkMesh& operator=(const DkMesh& rhs) = delete;
 private:
 	uint m_bindIndex;
-	DkBuffer* m_buffer;
+	DkBuffer* m_vertBuffer;
+	DkUniformBuffer* m_mvpBuffer;
+	math::mat4 m_MVP;
 	bool m_extBuffer;
 	std::vector<DkVertex> m_verts;
 };

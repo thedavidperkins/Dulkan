@@ -233,7 +233,7 @@ bool DkCommandBuffer::bindVertexBuffers(const std::vector<DkMesh*>& vertices) {
 		return false;
 	}
 
-	std::vector<VkBuffer> bfrs = { vertices[0]->getBuffer()->get() };
+	std::vector<VkBuffer> bfrs = { vertices[0]->getVertBuffer()->get() };
 	std::vector<VkDeviceSize> offsets = { 0 }; // Pending implementation: non-zero vertex buffer offsets
 	if (vertices.size() > 1) {
 		for (size_t iter = 1; iter < vertices.size(); ++iter) {
@@ -241,7 +241,7 @@ bool DkCommandBuffer::bindVertexBuffers(const std::vector<DkMesh*>& vertices) {
 				std::cout << "Error: cannot bind multiple non-contiguous vertex buffers in a single call." << std::endl;
 				return false;
 			}
-			bfrs.push_back(vertices[iter]->getBuffer()->get());
+			bfrs.push_back(vertices[iter]->getVertBuffer()->get());
 			offsets.push_back(0);
 		}
 	}

@@ -11,6 +11,8 @@ DkPipeline::DkPipeline(DkDevice& device, DkRenderPass& renderPass) :
 	m_shaders(),
 	m_meshes(),
 	m_pushConstantRanges(),
+	m_layoutBindings(),
+	m_descriptorSetLayout(VK_NULL_HANDLE),
 	m_topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST),
 	m_polygonMode(VK_POLYGON_MODE_FILL),
 	m_cullMode(VK_CULL_MODE_NONE),
@@ -94,6 +96,19 @@ void DkPipeline::addPushConstantRange(VkShaderStageFlags stage, uint offset, uin
 		return;
 	}
 	m_pushConstantRanges.push_back({ stage, offset, size });
+}
+
+void DkPipeline::addDescriptorBinding(const VkDescriptorSetLayoutBinding& bndg) {
+	if (m_initialized) {
+		std::cout << "Cannot add descriptor binding after initialization." << std::endl;
+		return;
+	}
+	for (auto& pre : m_layoutBindings) {
+		if (bndg.binding == pre.binding) {
+			std::cout << "Cannot add descriptor set layout binding of the same value as one previously added." << std::endl;
+		}
+	}
+	m_layoutBindings.push_back(bndg);
 }
 
 void DkPipeline::setDepthTestEnabled(bool enabled) {
@@ -239,12 +254,27 @@ bool DkPipeline::init() {
 		dynStates.data()
 	};
 
+	if (m_layoutBindings.size() > 0) {
+		VkDescriptorSetLayoutCreateInfo descSetInfo = {
+			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+			nullptr,
+			0,
+			(uint)m_layoutBindings.size(),
+			m_layoutBindings.data()
+		};
+
+		if (vkCreateDescriptorSetLayout(m_device.get(), &descSetInfo, nullptr, &m_descriptorSetLayout) != VK_SUCCESS) {
+			std::cout << "Failed to create descriptor set layout." << std::endl;
+			return false;
+		}
+	}
+
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
 		VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 		nullptr,
 		0,
-		0,									// descriptor set layout count
-		nullptr,							// descriptor set layouts
+		m_descriptorSetLayout == VK_NULL_HANDLE ? 0 : 1,
+		m_descriptorSetLayout == VK_NULL_HANDLE ? nullptr : &m_descriptorSetLayout,
 		(uint)m_pushConstantRanges.size(),
 		m_pushConstantRanges.data()
 	};
@@ -299,6 +329,10 @@ void DkPipeline::finalize() {
 	if (m_layout != VK_NULL_HANDLE) {
 		vkDestroyPipelineLayout(m_device.get(), m_layout, nullptr);
 		m_layout = VK_NULL_HANDLE;
+	}
+	if (m_descriptorSetLayout != VK_NULL_HANDLE) {
+		vkDestroyDescriptorSetLayout(m_device.get(), m_descriptorSetLayout, nullptr);
+		m_descriptorSetLayout = VK_NULL_HANDLE;
 	}
 	m_initialized = false;
 }

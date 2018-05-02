@@ -17,7 +17,7 @@ public:
 	// Setters
 	void setCreateFlags(VkBufferCreateFlags flags);
 	void setSize(VkDeviceSize size);
-	void setUsage(VkBufferUsageFlags usage);
+	virtual void setUsage(VkBufferUsageFlags usage);
 	void setSharingMode(VkSharingMode mode);
 	void setQueueFamilies(const std::vector<uint>& indices);
 
