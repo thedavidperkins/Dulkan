@@ -1,8 +1,12 @@
+#include <chrono>
 #include "DkSample_Cube.h"
 #include "DkAttachmentDescriptionBuilder.h"
 #include "DkCommandBuffer.h"
 
 using namespace math;
+using namespace std::chrono;
+
+static time_point<system_clock> initTime;
 
 DkSample_Cube::DkSample_Cube() :
 	DkApplication(),
@@ -132,6 +136,7 @@ bool DkSample_Cube::init() {
 	if (!m_pipeline.init()) return false;
 
 	m_initialized = true;
+	initTime = system_clock::now();
 	return true;
 }
 
@@ -162,6 +167,9 @@ bool DkSample_Cube::draw() {
 			}
 			)) return false;
 	}
+	time_point<system_clock> thisTime = system_clock::now();
+	duration<float> sinceStartDur = thisTime - initTime;
+	float sinceStart = duration_cast<duration<float>>(thisTime - initTime).count();
 
 	vec3 eye(4.f, 5.f, 4.f);
 	vec3 center(0.f, 0.f, 0.f);
@@ -169,8 +177,9 @@ bool DkSample_Cube::draw() {
 
 	VkExtent2D ext = getWindow().getExtent();
 	mat4 look = lookAt(eye, center, up);
+	mat3 rot3 = rotation(sinceStart * 360.f / 3.f, vec3(0.f, sin(sinceStart * 2.f * PI / 9.f), cos(sinceStart * 2.f * PI / 9.f)));
 	mat4 persp = perspective(45.f, (float)ext.width / (float)ext.height, .1f, 100.f);
-	mat4 transform = persp * look;
+	mat4 transform = persp * look * mat4(rot3);
 
 	if (!cmdBfr->pushConstants(m_pipeline, 0, (void*)&transpose(transform))) return false;
 	VkClearValue clearCol, clearDepth;

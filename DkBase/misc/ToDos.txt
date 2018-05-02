@@ -1,7 +1,7 @@
 HIGH PRIORITY:
 ==============
 Add non-trivial descriptor set layouts
-Add non-trivial push constants
+Absorb subpass descriptions into render pass init for simple cases
 	
 LOW PRIORITY:
 =============
