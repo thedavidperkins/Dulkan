@@ -29,6 +29,7 @@ public:
 		std::vector<VkVertexInputAttributeDescription>& attributeDescriptions
 	);
 	DkBuffer* getVertBuffer() { return m_vertBuffer; }
+	DkBuffer* getMVPBuffer();
 	uint getBindingIndex() { return m_bindIndex; }
 	uint getVertCount() { return (uint)m_verts.size(); }
 

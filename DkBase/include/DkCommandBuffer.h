@@ -13,6 +13,7 @@ class DkRenderPass;
 class DkFramebuffer;
 class DkPipeline;
 class DkMesh;
+class DkDescriptorSet;
 
 struct DkBufferTransition {
 	DkBuffer* bfr;
@@ -68,6 +69,7 @@ public:
 		DkFramebuffer* framebuffer,
 		const std::vector<VkClearValue>& clearVals
 	);
+	bool bindDescriptorSet(DkDescriptorSet* descriptorSet, DkPipeline* pipeline);
 	bool bindPipeline(DkPipeline* pipeline);
 	bool setViewport(uint firstViewport, const std::vector<VkViewport>& viewports);
 	bool setScissor(uint firstScissor, const std::vector<VkRect2D>& scissors);

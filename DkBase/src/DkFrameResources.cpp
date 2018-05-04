@@ -26,8 +26,8 @@ bool DkFrameResources::init() {
 	if (m_useDepth) {
 		if (!_initDepthAttachment()) return false;
 	}
-	if (!m_imgAcqSemaphore.init(false)) return false;
-	if (!m_rdyPrsSemaphore.init(false)) return false;
+	if (!m_imgAcqSemaphore.init()) return false;
+	if (!m_rdyPrsSemaphore.init()) return false;
 	if (!m_drawDoneFence.init(true)) return false; // expected usage is to wait for signal at start of loop, so start signaled for beginning
 
 	m_initialized = true;

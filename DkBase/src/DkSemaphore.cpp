@@ -5,11 +5,11 @@ DkSemaphore::DkSemaphore(DkDevice& device) :
 	m_semaphore(VK_NULL_HANDLE)
 {}
 
-bool DkSemaphore::init(bool signaled) {
+bool DkSemaphore::init() {
 	VkSemaphoreCreateInfo semInfo = {
 		VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
 		nullptr,
-		signaled ? VK_FENCE_CREATE_SIGNALED_BIT : (VkSemaphoreCreateFlags)0
+		0
 	};
 	if (vkCreateSemaphore(m_device.get(), &semInfo, nullptr, &m_semaphore) != VK_SUCCESS) {
 		std::cout << "Failed to create semaphore." << std::endl;

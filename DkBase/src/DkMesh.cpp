@@ -23,8 +23,12 @@ bool DkMesh::pushMVP(DkCommandBuffer* bfr, DkQueue& queue, const std::vector<DkS
 		std::cout << "Cannot push view matrix. Buffers must be initialized first." << std::endl;
 		return false;
 	}
-	return m_mvpBuffer->pushData((uint)sizeof(mat4), &m_MVP, bfr, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+	return m_mvpBuffer->pushData((uint)sizeof(mat4), &(transpose(m_MVP)), bfr, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 		VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, 0, VK_ACCESS_UNIFORM_READ_BIT, signalSemaphores, queue);
+}
+
+DkBuffer* DkMesh::getMVPBuffer() {
+	return m_mvpBuffer;
 }
 
 void DkMesh::getPipelineCreateInfo(

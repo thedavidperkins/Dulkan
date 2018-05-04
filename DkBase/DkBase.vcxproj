@@ -24,6 +24,8 @@
     <ClInclude Include="include\DkBuffer.h" />
     <ClInclude Include="include\DkCommandBuffer.h" />
     <ClInclude Include="include\DkCommon.h" />
+    <ClInclude Include="include\DkDescriptorPool.h" />
+    <ClInclude Include="include\DkDescriptorSet.h" />
     <ClInclude Include="include\DkDevice.h" />
     <ClInclude Include="include\DkDeviceMemory.h" />
     <ClInclude Include="include\DkFence.h" />
@@ -53,6 +55,8 @@
     <ClCompile Include="src\DkBuffer.cpp" />
     <ClCompile Include="src\DkCommandBuffer.cpp" />
     <ClCompile Include="src\DkCommandPool.cpp" />
+    <ClCompile Include="src\DkDescriptorPool.cpp" />
+    <ClCompile Include="src\DkDescriptorSet.cpp" />
     <ClCompile Include="src\DkDevice.cpp" />
     <ClCompile Include="src\DkDeviceMemory.cpp" />
     <ClCompile Include="src\DkFence.cpp" />

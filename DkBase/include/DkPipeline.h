@@ -36,6 +36,7 @@ public:
 	VkPipeline& get() { return m_pipeline; }
 	VkPipelineLayout getLayoutHandle() { return m_layout; }
 	VkPushConstantRange getPushConstantRangeInfo(uint index);
+	VkDescriptorSetLayout getDescriptorSetLayout() { return m_descriptorSetLayout; }
 
 	DkPipeline(DkDevice& device, DkRenderPass& renderPass);
 	virtual ~DkPipeline() { finalize(); }

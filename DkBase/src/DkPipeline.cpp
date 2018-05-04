@@ -273,10 +273,10 @@ bool DkPipeline::init() {
 		VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 		nullptr,
 		0,
-		m_descriptorSetLayout == VK_NULL_HANDLE ? 0 : 1,
+		m_descriptorSetLayout == VK_NULL_HANDLE ? 0U : 1U,
 		m_descriptorSetLayout == VK_NULL_HANDLE ? nullptr : &m_descriptorSetLayout,
 		(uint)m_pushConstantRanges.size(),
-		m_pushConstantRanges.data()
+		m_pushConstantRanges.size() == 0 ? nullptr : m_pushConstantRanges.data()
 	};
 	if (vkCreatePipelineLayout(m_device.get(), &pipelineLayoutInfo, nullptr, &m_layout) != VK_SUCCESS || m_layout == VK_NULL_HANDLE) {
 		std::cout << "Failed to create pipeline layout." << std::endl;

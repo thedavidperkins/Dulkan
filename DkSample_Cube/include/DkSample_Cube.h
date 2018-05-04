@@ -2,6 +2,8 @@
 #define DK_SAMPLE_CUBE
 
 #include "DkApplication.h"
+#include "DkDescriptorPool.h"
+#include "DkDescriptorSet.h"
 
 class DkSample_Cube : public DkApplication {
 public:
@@ -23,8 +25,11 @@ private:
 	DkSwapchain m_swapchain;
 	DkRenderPass m_renderPass;
 	std::vector<DkFrameResources*> m_frames;
+	std::vector<DkSemaphore*> m_pushUniformSemaphores;
 	DkPipeline m_pipeline;
 	DkMesh* m_cube;
+	DkDescriptorPool m_descPool;
+	DkDescriptorSet* m_descSet;
 
 	// State
 	bool m_initialized;

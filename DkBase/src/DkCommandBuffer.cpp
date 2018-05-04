@@ -5,6 +5,7 @@
 #include "DkFramebuffer.h"
 #include "DkPipeline.h"
 #include "DkMesh.h"
+#include "DkDescriptorSet.h"
 
 DkCommandBuffer::DkCommandBuffer(DkCommandPool& pool) :
 	m_pool(pool),
@@ -189,6 +190,16 @@ bool DkCommandBuffer::beginRenderPass(
 	vkCmdBeginRenderPass(m_commandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
 
 	m_inRenderPass = true;
+	return true;
+}
+
+bool DkCommandBuffer::bindDescriptorSet(DkDescriptorSet* descriptorSet, DkPipeline* pipeline) {
+	if (!m_recording) {
+		std::cout << "Cannot bind descriptor set. Not yet recording." << std::endl;
+		return false;
+	}
+	VkDescriptorSet set = descriptorSet->get();
+	vkCmdBindDescriptorSets(m_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getLayoutHandle(), 0, 1, &set, 0, nullptr);
 	return true;
 }
 

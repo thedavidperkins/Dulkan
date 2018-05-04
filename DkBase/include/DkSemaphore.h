@@ -6,11 +6,13 @@
 
 class DkSemaphore {
 public:
-	bool init(bool signaled);
+	bool init();
 	void finalize();
 
 	// Getters
 	VkSemaphore get() const { return m_semaphore; }
+
+	//bool wait();
 
 	DkSemaphore(DkDevice& device);
 	~DkSemaphore() { finalize(); }
