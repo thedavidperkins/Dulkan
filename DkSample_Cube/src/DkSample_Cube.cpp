@@ -167,16 +167,23 @@ bool DkSample_Cube::draw() {
 	time_point<system_clock> thisTime = system_clock::now();
 	duration<float> sinceStartDur = thisTime - initTime;
 	float sinceStart = duration_cast<duration<float>>(thisTime - initTime).count();
-	vec3 eye(4.f, 5.f, 4.f);
+	vec3 eye(7.f, 8.f, 7.f);
 	vec3 center(0.f, 0.f, 0.f);
 	vec3 up(0.f, 1.f, 0.f);
+	vec3 left = 3.f * normalize(cross(up, center - eye));
+	vec3 right = -left;
 
 	VkExtent2D ext = getWindow().getExtent();
 	mat4 look = lookAt(eye, center, up);
-	mat3 rot3 = rotation(sinceStart * 360.f / 3.f, vec3(0.f, sin(sinceStart * 2.f * PI / 9.f), cos(sinceStart * 2.f * PI / 9.f)));
+	mat4 lTransl = translate(left[0], left[1], left[2]);
+	mat4 rTransl = translate(right[0], right[1], right[2]);
+	mat3 lrot3 = rotation(sinceStart * 360.f / 3.f, vec3(-1.f, 1.f, 1.f));
+	mat3 rrot3 = rotation(-sinceStart * 360.f / 3.f, vec3(1.f, 1.f, -1.f));
 	mat4 persp = perspective(45.f, (float)ext.width / (float)ext.height, .1f, 100.f);
-	mat4 transform = persp * look * mat4(rot3);
-	m_cube->setMVP(transform);
+	mat4 ltransform = persp * look * lTransl * mat4(lrot3);
+	mat4 rtransform = persp * look * rTransl * mat4(rrot3);
+	m_cube->setMVP(ltransform, 0);
+	m_cube->setMVP(rtransform, 1);
 
 	if (!m_cube->pushMVP(cmdBfr, getQueue(DK_GRAPHICS_QUEUE), { m_pushUniformSemaphores[m_curFrame] })) return false;
 
@@ -211,7 +218,7 @@ bool DkSample_Cube::draw() {
 	if (!cmdBfr->setViewport(0, { { 0.f, 0.f, (float)getWindow().getExtent().width, (float)getWindow().getExtent().height, 0.f, 1.f } })) return false;
 	if (!cmdBfr->setScissor(0, { { { 0, 0 },{ getWindow().getExtent().width, getWindow().getExtent().height } } })) return false;
 	if (!cmdBfr->bindVertexBuffers({ m_cube })) return false;
-	if (!cmdBfr->draw(m_cube)) return false;
+	if (!cmdBfr->draw(m_cube, 2)) return false;
 	if (!cmdBfr->endRenderPass()) return false;
 
 	if (getQueue(DK_GRAPHICS_QUEUE).getFamilyIndex() != getQueue(DK_PRESENT_QUEUE).getFamilyIndex()) {

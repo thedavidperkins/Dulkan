@@ -11,6 +11,8 @@ class DkCommandBuffer;
 class DkUniformBuffer;
 class DkSemaphore;
 
+const uint MAX_MESH_INSTANCES = 16;
+
 struct DkVertex {
 	math::vec4 vert;
 	math::vec4 color;
@@ -35,7 +37,7 @@ public:
 
 	// Setters
 	void addVerts(const std::vector<DkVertex>& verts);
-	void setMVP(const math::mat4& mvp) { m_MVP = mvp; }
+	void setMVP(const math::mat4& mvp, uint index = 0) { m_MVPs[index] = mvp; }
 
 	bool pushMVP(DkCommandBuffer* bfr, DkQueue& queue, const std::vector<DkSemaphore*>& signalSemaphores = {});
 
@@ -47,7 +49,7 @@ private:
 	uint m_bindIndex;
 	DkBuffer* m_vertBuffer;
 	DkUniformBuffer* m_mvpBuffer;
-	math::mat4 m_MVP;
+	std::vector<math::mat4> m_MVPs;
 	bool m_extBuffer;
 	std::vector<DkVertex> m_verts;
 };

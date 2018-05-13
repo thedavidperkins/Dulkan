@@ -261,13 +261,13 @@ bool DkCommandBuffer::bindVertexBuffers(const std::vector<DkMesh*>& vertices) {
 	return true;
 }
 
-bool DkCommandBuffer::draw(DkMesh* mesh) {
+bool DkCommandBuffer::draw(DkMesh* mesh, uint nInstances) {
 	if (!m_inRenderPass) {
 		std::cout << "Cannot execute draw command. Render pass not yet started or already ended." << std::endl;
 		return false;
 	}
 
-	vkCmdDraw(m_commandBuffer, mesh->getVertCount(), 1, 0, 0); // Pending implementation: multi-instance draws and varied starting vertices
+	vkCmdDraw(m_commandBuffer, mesh->getVertCount(), nInstances, 0, 0); // Pending implementation: varied starting vertices and instances
 	return true;
 }
 

@@ -9,10 +9,12 @@ DkMesh::DkMesh(DkBuffer* buffer) :
 	m_bindIndex(0),
 	m_vertBuffer(buffer),
 	m_mvpBuffer(nullptr),
-	m_MVP(),
+	m_MVPs(),
 	m_extBuffer(buffer != nullptr),
 	m_verts()
-{}
+{
+	m_MVPs.resize(MAX_MESH_INSTANCES);
+}
 
 void DkMesh::addVerts(const std::vector<DkVertex>& verts) {
 	m_verts.insert(m_verts.end(), verts.begin(), verts.end());
@@ -23,7 +25,11 @@ bool DkMesh::pushMVP(DkCommandBuffer* bfr, DkQueue& queue, const std::vector<DkS
 		std::cout << "Cannot push view matrix. Buffers must be initialized first." << std::endl;
 		return false;
 	}
-	return m_mvpBuffer->pushData((uint)sizeof(mat4), &(transpose(m_MVP)), bfr, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+	std::vector<mat4> locMVPs;
+	for (auto& mvp : m_MVPs) {
+		locMVPs.push_back(transpose(mvp));
+	}
+	return m_mvpBuffer->pushData((uint)(sizeof(mat4) * locMVPs.size()), locMVPs.data(), bfr, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 		VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, 0, VK_ACCESS_UNIFORM_READ_BIT, signalSemaphores, queue);
 }
 
@@ -78,7 +84,7 @@ bool DkMesh::initVertBuffer(DkDevice& device, DkCommandBuffer* bfr, DkQueue& que
 
 	// initialize transformation matrix buffer
 	m_mvpBuffer = new DkUniformBuffer(device, nullptr);
-	m_mvpBuffer->setSize(sizeof(mat4));
+	m_mvpBuffer->setSize(sizeof(mat4) * MAX_MESH_INSTANCES);
 	if (!m_mvpBuffer->init()) return false;
 	return pushMVP(bfr, queue);
 }
