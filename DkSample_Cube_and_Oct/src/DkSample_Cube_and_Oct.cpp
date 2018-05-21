@@ -1,5 +1,5 @@
 #include <chrono>
-#include "DkSample_Cube.h"
+#include "DkSample_Cube_and_Oct.h"
 #include "DkAttachmentDescriptionBuilder.h"
 #include "DkCommandBuffer.h"
 
@@ -8,7 +8,7 @@ using namespace std::chrono;
 
 static time_point<system_clock> initTime;
 
-DkSample_Cube::DkSample_Cube() :
+DkSample_Cube_and_Oct::DkSample_Cube_and_Oct() :
 	DkApplication(),
 	m_frameCount(3),
 	m_swapchain(getDevice(), getWindow()),
@@ -23,7 +23,7 @@ DkSample_Cube::DkSample_Cube() :
 	m_curFrame(0)
 {}
 
-void DkSample_Cube::setFrameCount(uint count) {
+void DkSample_Cube_and_Oct::setFrameCount(uint count) {
 	if (m_initialized) {
 		std::cout << "Cannot set frame count after initialization." << std::endl;
 		return;
@@ -31,7 +31,7 @@ void DkSample_Cube::setFrameCount(uint count) {
 	m_frameCount = count;
 }
 
-bool DkSample_Cube::init() {
+bool DkSample_Cube_and_Oct::init() {
 	getWindow().setWindowRect({ { 0, 0 }, { 1080, 1080 } });
 	if (!vulkanInit()) return false;
 
@@ -96,10 +96,10 @@ bool DkSample_Cube::init() {
 
 	if (!m_renderPass.init()) return false;
 
-	if (!m_pipeline.addShader("E:/VisualStudio/Projects/Dulkan/DkSample_Cube/shaders/vert.spv", VK_SHADER_STAGE_VERTEX_BIT)) return false;
-	if (!m_pipeline.addShader("E:/VisualStudio/Projects/Dulkan/DkSample_Cube/shaders/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)) return false;
+	if (!m_pipeline.addShader("E:/VisualStudio/Projects/Dulkan/DkSample_Cube_and_Oct/shaders/vert.spv", VK_SHADER_STAGE_VERTEX_BIT)) return false;
+	if (!m_pipeline.addShader("E:/VisualStudio/Projects/Dulkan/DkSample_Cube_and_Oct/shaders/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)) return false;
 
-	m_cube = new DkMesh(nullptr);
+	m_cube = new DkMesh(nullptr, 1);
 
 	vec4 trf( 1.f,  1.f, -1.f,  1.f);
 	vec4 trb( 1.f,  1.f,  1.f,  1.f);
@@ -116,6 +116,8 @@ bool DkSample_Cube::init() {
 	vec4 lefCol(0.f, 1.f, 1.f, 1.f); // cyan
 	vec4 bacCol(0.f, 1.f, 0.f, 1.f); // green
 	vec4 froCol(0.f, 0.f, 1.f, 1.f); // blue
+	vec4 whiteC(1.f, 1.f, 1.f, 1.f); // white
+	vec4 blackC(0.f, 0.f, 0.f, 1.f); // black
 
 	m_cube->addVerts({
 		{ trf, rigCol }, { trb, rigCol }, { brb, rigCol },
@@ -132,33 +134,52 @@ bool DkSample_Cube::init() {
 		{ blf, botCol }, { brf, botCol }, { brb, botCol }  // bottom side
 	});
 
+	m_octahedron = new DkMesh(nullptr, 1);
+	
+	vec4 top( 0.f,  1.f,  0.f, 1.f);
+	vec4 bot( 0.f, -1.f,  0.f, 1.f);
+	vec4 lef( 1.f,  0.f,  0.f, 1.f);
+	vec4 rig(-1.f,  0.f,  0.f, 1.f);
+	vec4 fro( 0.f,  0.f,  1.f, 1.f);
+	vec4 bac( 0.f,  0.f, -1.f, 1.f);
+
+	m_octahedron->addVerts({
+		{ top, topCol }, { rig, topCol }, { fro, topCol },
+		{ top, froCol }, { fro, froCol }, { lef, froCol },
+		{ top, lefCol }, { lef, lefCol }, { bac, lefCol },
+		{ top, bacCol }, { bac, bacCol }, { rig, bacCol },
+		{ bot, botCol }, { rig, botCol }, { bac, botCol },
+		{ bot, whiteC }, { bac, whiteC }, { lef, whiteC },
+		{ bot, rigCol }, { lef, rigCol }, { fro, rigCol },
+		{ bot, blackC }, { fro, blackC }, { rig, blackC }
+	});
+
 	DkCommandBuffer* bfr = getCommandPool(DK_GRAPHICS_QUEUE)->allocate(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-	if (!m_cube->initVertBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE))) return false;
+	if (!m_cube->initVertBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE), false)) return false;
+	if (!m_octahedron->initVertBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE), false)) return false;
 	getCommandPool(DK_GRAPHICS_QUEUE)->freeBuffer(bfr);
 
-	m_pipeline.addDescriptorBinding({
-		0,
-		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-		1,
-		VK_SHADER_STAGE_VERTEX_BIT,
-		nullptr
-	});
-	m_pipeline.addMesh(m_cube);
+	m_pipeline.addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mat4));
+	m_pipeline.addMesh(m_cube); // weirdness -- I originally thought that multiple vertex buffers
+								//    of the same type would need to have separate bindings, but
+								//    it makes more sense in simple cases to successively bind
+								//    meshes to the same binding for successive draws. Multiple
+								//    bindings are more for adding multiple buffers carrying
+	                            //    different attributes of the vertex data.
+								//
+								//    Pending implementation: a more natural treatment of pipeline
+								//    layouts and vertex bindings. For now, add one mesh of the
+								//    format desired and make sure additional meshes match that.
+	
 	m_pipeline.setDepthTestEnabled(true);
 	if (!m_pipeline.init()) return false;
-
-	m_descPool.addToPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1);
-	if (!m_descPool.init()) return false;
-	m_descSet = m_descPool.allocate(m_pipeline.getDescriptorSetLayout());
-	if (m_descSet == nullptr) return false;
-	if (!m_descSet->updateBuffer(0, m_cube->getMVPBuffer(), 0, VK_WHOLE_SIZE, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)) return false;
 
 	m_initialized = true;
 	initTime = system_clock::now();
 	return true;
 }
 
-bool DkSample_Cube::draw() {
+bool DkSample_Cube_and_Oct::draw() {
 	DkFrameResources& frame = *(m_frames[m_curFrame]);
 	if (!frame.reset()) return false;
 
@@ -167,18 +188,23 @@ bool DkSample_Cube::draw() {
 	time_point<system_clock> thisTime = system_clock::now();
 	duration<float> sinceStartDur = thisTime - initTime;
 	float sinceStart = duration_cast<duration<float>>(thisTime - initTime).count();
-	vec3 eye(3.f, 4.f, 3.f);
+	vec3 eye(8.f, 5.f, 8.f);
 	vec3 center(0.f, 0.f, 0.f);
 	vec3 up(0.f, 1.f, 0.f);
-	
+	vec3 left = 3.f * normalize(cross(up, center - eye));
+	vec3 right = -left;
+
 	VkExtent2D ext = getWindow().getExtent();
 	mat4 look = lookAt(eye, center, up);
-	mat3 rot3 = rotation(sinceStart * 360.f / 3.f, vec3(-1.f, 1.f, 1.f));
+	mat4 lTransl = translate(left[0], left[1], left[2]);
+	mat4 rTransl = translate(right[0], right[1], right[2]);
+	mat3 lrot3 = rotation(sinceStart * 360.f / 3.f, vec3(-1.f, 1.f, 1.f));
+	mat3 rrot3 = rotation(-sinceStart * 360.f / 3.f, vec3(0.f, 1.f, 0.f));
 	mat4 persp = perspective(45.f, (float)ext.width / (float)ext.height, .1f, 100.f);
-	mat4 transform = persp * look * mat4(rot3);
-	m_cube->setMVP(transform);
-
-	if (!m_cube->pushMVP(cmdBfr, getQueue(DK_GRAPHICS_QUEUE), { m_pushUniformSemaphores[m_curFrame] })) return false;
+	mat4 ltransform = persp * look * lTransl * mat4(lrot3);
+	mat4 rtransform = persp * look * rTransl * scale(1.6f, 1.6f, 1.6f) * mat4(rrot3);
+	m_cube->setMVP(ltransform, 0);
+	m_octahedron->setMVP(rtransform, 0);
 
 	if (!cmdBfr->beginRecording()) return false;
 
@@ -207,11 +233,14 @@ bool DkSample_Cube::draw() {
 	clearDepth.depthStencil = { 1.f, 0 };
 	if (!cmdBfr->beginRenderPass(&m_renderPass, &frame.getFramebuffer(), { clearCol, clearDepth })) return false;
 	if (!cmdBfr->bindPipeline(&m_pipeline)) return false;
-	if (!cmdBfr->bindDescriptorSet(m_descSet, &m_pipeline)) return false;
 	if (!cmdBfr->setViewport(0, { { 0.f, 0.f, (float)getWindow().getExtent().width, (float)getWindow().getExtent().height, 0.f, 1.f } })) return false;
 	if (!cmdBfr->setScissor(0, { { { 0, 0 },{ getWindow().getExtent().width, getWindow().getExtent().height } } })) return false;
 	if (!cmdBfr->bindVertexBuffers({ m_cube })) return false;
+	if (!cmdBfr->pushConstants(m_pipeline, 0, &transpose(m_cube->getMVP()))) return false;
 	if (!cmdBfr->draw(m_cube)) return false;
+	if (!cmdBfr->bindVertexBuffers({ m_octahedron })) return false;
+	if (!cmdBfr->pushConstants(m_pipeline, 0, &transpose(m_octahedron->getMVP()))) return false;
+	if (!cmdBfr->draw(m_octahedron)) return false;
 	if (!cmdBfr->endRenderPass()) return false;
 
 	if (getQueue(DK_GRAPHICS_QUEUE).getFamilyIndex() != getQueue(DK_PRESENT_QUEUE).getFamilyIndex()) {
@@ -236,7 +265,7 @@ bool DkSample_Cube::draw() {
 
 	if (!cmdBfr->endRecording()) return false;
 
-	if (!cmdBfr->submit(getQueue(DK_GRAPHICS_QUEUE), { { &frame.getImgAcqSemaphore(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT }, { m_pushUniformSemaphores[m_curFrame], VK_PIPELINE_STAGE_VERTEX_SHADER_BIT} }, { &frame.getRdyPrsSemaphore() }, frame.getFence())) return false;
+	if (!cmdBfr->submit(getQueue(DK_GRAPHICS_QUEUE), { { &frame.getImgAcqSemaphore(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT } }, { &frame.getRdyPrsSemaphore() }, frame.getFence())) return false;
 
 	if (!getWindow().present(getQueue(DK_PRESENT_QUEUE), { &frame.getRdyPrsSemaphore() }, { { &m_swapchain, frame.getCurIndex() } })) return false;
 
@@ -244,8 +273,12 @@ bool DkSample_Cube::draw() {
 	return true;
 }
 
-void DkSample_Cube::finalize() {
+void DkSample_Cube_and_Oct::finalize() {
 	m_pipeline.finalize();
+	if (m_octahedron != nullptr) {
+		delete m_octahedron;
+		m_octahedron = nullptr;
+	}
 	if (m_cube != nullptr) {
 		delete m_cube;
 		m_cube = nullptr;
@@ -267,7 +300,7 @@ void DkSample_Cube::finalize() {
 	m_initialized = false;
 }
 
-bool DkSample_Cube::resize() {
+bool DkSample_Cube_and_Oct::resize() {
 	if (!m_swapchain.resize()) return false;
 	for (auto& frame : m_frames) {
 		if (!frame->resize()) return false;

@@ -170,7 +170,8 @@ bool DkBuffer::pushData(
 	vkUnmapMemory(m_device.get(), stagingBuffer.getMemory()->get());
 	
 	// Send copy command to device
-	if (!bfr->beginRecording(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT)) return false;
+	bool recordingOn = bfr->isRecording();
+	if (!recordingOn && !bfr->beginRecording(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT)) return false;
 	bfr->setMemoryBarrier(producingStage, VK_PIPELINE_STAGE_TRANSFER_BIT, {}, {
 		{
 			this,
@@ -190,7 +191,7 @@ bool DkBuffer::pushData(
 			VK_QUEUE_FAMILY_IGNORED
 		}
 	}, {});
-	if (!bfr->endRecording()) return false;
+	if (!recordingOn && !bfr->endRecording()) return false;
 	
 	DkFence fence(m_device);
 	fence.init(false);

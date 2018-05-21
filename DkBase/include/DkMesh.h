@@ -20,7 +20,7 @@ struct DkVertex {
 
 class DkMesh {
 public:
-	bool initVertBuffer(DkDevice& device, DkCommandBuffer* bfr, DkQueue& queue);
+	bool initVertBuffer(DkDevice& device, DkCommandBuffer* bfr, DkQueue& queue, bool useUniformMVPBuffer = true);
 	void finalizeBuffer();
 	void finalize();
 
@@ -32,21 +32,23 @@ public:
 	);
 	DkBuffer* getVertBuffer() { return m_vertBuffer; }
 	DkBuffer* getMVPBuffer();
+	math::mat4 getMVP(uint index = 0) { return m_MVPs[index]; }
 	uint getBindingIndex() { return m_bindIndex; }
 	uint getVertCount() { return (uint)m_verts.size(); }
 
 	// Setters
 	void addVerts(const std::vector<DkVertex>& verts);
-	void setMVP(const math::mat4& mvp, uint index = 0) { m_MVPs[index] = mvp; }
+	void setMVP(const math::mat4& mvp, uint index = 0);
 
 	bool pushMVP(DkCommandBuffer* bfr, DkQueue& queue, const std::vector<DkSemaphore*>& signalSemaphores = {});
 
-	DkMesh(DkBuffer* buffer);
+	DkMesh(DkBuffer* buffer, uint maxInstances = MAX_MESH_INSTANCES);
 	~DkMesh() { finalize(); }
 	DkMesh(const DkMesh& rhs) = delete;
 	DkMesh& operator=(const DkMesh& rhs) = delete;
 private:
 	uint m_bindIndex;
+	uint m_maxInstances;
 	DkBuffer* m_vertBuffer;
 	DkUniformBuffer* m_mvpBuffer;
 	std::vector<math::mat4> m_MVPs;

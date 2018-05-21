@@ -46,6 +46,7 @@ public:
 	// Getters
 	VkCommandBuffer& get() { return m_commandBuffer; }
 	VkCommandBufferLevel getLevel() { return m_bufLevel; }
+	bool isRecording() { return m_recording; }
 
 	void setBufferLevel(VkCommandBufferLevel level);
 	
