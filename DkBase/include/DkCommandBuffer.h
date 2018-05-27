@@ -74,7 +74,7 @@ public:
 	bool bindPipeline(DkPipeline* pipeline);
 	bool setViewport(uint firstViewport, const std::vector<VkViewport>& viewports);
 	bool setScissor(uint firstScissor, const std::vector<VkRect2D>& scissors);
-	bool bindVertexBuffers(const std::vector<DkMesh*>& vertices);
+	bool bindVertexBuffer(DkMesh* vertices);
 	bool draw(DkMesh* mesh, uint nInstances = 1);
 	bool endRenderPass();
 	bool endRecording();

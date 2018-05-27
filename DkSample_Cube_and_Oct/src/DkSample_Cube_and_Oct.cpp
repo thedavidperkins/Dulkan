@@ -96,8 +96,8 @@ bool DkSample_Cube_and_Oct::init() {
 
 	if (!m_renderPass.init()) return false;
 
-	if (!m_pipeline.addShader("E:/VisualStudio/Projects/Dulkan/DkSample_Cube_and_Oct/shaders/vert.spv", VK_SHADER_STAGE_VERTEX_BIT)) return false;
-	if (!m_pipeline.addShader("E:/VisualStudio/Projects/Dulkan/DkSample_Cube_and_Oct/shaders/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)) return false;
+	if (!m_pipeline.addShader("shaders/vert.spv", VK_SHADER_STAGE_VERTEX_BIT)) return false;
+	if (!m_pipeline.addShader("shaders/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)) return false;
 
 	m_cube = new DkMesh(nullptr, 1);
 
@@ -160,16 +160,7 @@ bool DkSample_Cube_and_Oct::init() {
 	getCommandPool(DK_GRAPHICS_QUEUE)->freeBuffer(bfr);
 
 	m_pipeline.addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mat4));
-	m_pipeline.addMesh(m_cube); // weirdness -- I originally thought that multiple vertex buffers
-								//    of the same type would need to have separate bindings, but
-								//    it makes more sense in simple cases to successively bind
-								//    meshes to the same binding for successive draws. Multiple
-								//    bindings are more for adding multiple buffers carrying
-	                            //    different attributes of the vertex data.
-								//
-								//    Pending implementation: a more natural treatment of pipeline
-								//    layouts and vertex bindings. For now, add one mesh of the
-								//    format desired and make sure additional meshes match that.
+	m_pipeline.addVertexInfo<DkMesh>();
 	
 	m_pipeline.setDepthTestEnabled(true);
 	if (!m_pipeline.init()) return false;
@@ -201,10 +192,12 @@ bool DkSample_Cube_and_Oct::draw() {
 	mat3 lrot3 = rotation(sinceStart * 360.f / 3.f, vec3(-1.f, 1.f, 1.f));
 	mat3 rrot3 = rotation(-sinceStart * 360.f / 3.f, vec3(0.f, 1.f, 0.f));
 	mat4 persp = perspective(45.f, (float)ext.width / (float)ext.height, .1f, 100.f);
-	mat4 ltransform = persp * look * lTransl * mat4(lrot3);
-	mat4 rtransform = persp * look * rTransl * scale(1.6f, 1.6f, 1.6f) * mat4(rrot3);
-	m_cube->setMVP(ltransform, 0);
-	m_octahedron->setMVP(rtransform, 0);
+	mat4 ltransform = look * lTransl * mat4(lrot3);
+	mat4 rtransform = look * rTransl * scale(1.6f, 1.6f, 1.6f) * mat4(rrot3);
+	m_cube->setMV(ltransform, 0);
+	m_cube->setProj(persp, 0);
+	m_octahedron->setMV(rtransform, 0);
+	m_octahedron->setProj(persp, 0);
 
 	if (!cmdBfr->beginRecording()) return false;
 
@@ -235,10 +228,10 @@ bool DkSample_Cube_and_Oct::draw() {
 	if (!cmdBfr->bindPipeline(&m_pipeline)) return false;
 	if (!cmdBfr->setViewport(0, { { 0.f, 0.f, (float)getWindow().getExtent().width, (float)getWindow().getExtent().height, 0.f, 1.f } })) return false;
 	if (!cmdBfr->setScissor(0, { { { 0, 0 },{ getWindow().getExtent().width, getWindow().getExtent().height } } })) return false;
-	if (!cmdBfr->bindVertexBuffers({ m_cube })) return false;
+	if (!cmdBfr->bindVertexBuffer(m_cube)) return false;
 	if (!cmdBfr->pushConstants(m_pipeline, 0, &transpose(m_cube->getMVP()))) return false;
 	if (!cmdBfr->draw(m_cube)) return false;
-	if (!cmdBfr->bindVertexBuffers({ m_octahedron })) return false;
+	if (!cmdBfr->bindVertexBuffer(m_octahedron)) return false;
 	if (!cmdBfr->pushConstants(m_pipeline, 0, &transpose(m_octahedron->getMVP()))) return false;
 	if (!cmdBfr->draw(m_octahedron)) return false;
 	if (!cmdBfr->endRenderPass()) return false;

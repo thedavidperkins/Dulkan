@@ -88,10 +88,10 @@ bool DkSample_Triangle::init() {
 		{ {  .75f,  .75f, 0.f, 1.f }, {} }
 		});
 	DkCommandBuffer* bfr = getCommandPool(DK_GRAPHICS_QUEUE)->allocate(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-	if (!m_triangle->initBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE))) return false;
+	if (!m_triangle->initVertBuffer(getDevice(), bfr, getQueue(DK_GRAPHICS_QUEUE))) return false;
 	getCommandPool(DK_GRAPHICS_QUEUE)->freeBuffer(bfr);
 
-	m_pipeline.addMesh(m_triangle);
+	m_pipeline.addVertexInfo<DkMesh>();
 	if (!m_pipeline.init()) return false;
 
 	m_initialized = true;
@@ -130,7 +130,7 @@ bool DkSample_Triangle::draw() {
 	if (!cmdBfr->bindPipeline(&m_pipeline)) return false;
 	if (!cmdBfr->setViewport(0, { { 0.f, 0.f, (float)getWindow().getExtent().width, (float)getWindow().getExtent().height, 0.f, 1.f } })) return false;
 	if (!cmdBfr->setScissor(0, { { { 0, 0 },{ getWindow().getExtent().width, getWindow().getExtent().height } } })) return false;
-	if (!cmdBfr->bindVertexBuffers({ m_triangle })) return false;
+	if (!cmdBfr->bindVertexBuffer(m_triangle)) return false;
 	if (!cmdBfr->draw(m_triangle)) return false;
 	if (!cmdBfr->endRenderPass()) return false;
 

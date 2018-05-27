@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -18,99 +18,35 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\DkApplication.h" />
-    <ClInclude Include="include\DkAttachmentDescriptionBuilder.h" />
-    <ClInclude Include="include\DkBuffer.h" />
-    <ClInclude Include="include\DkCommandBuffer.h" />
-    <ClInclude Include="include\DkCommon.h" />
-    <ClInclude Include="include\DkDescriptorPool.h" />
-    <ClInclude Include="include\DkDescriptorSet.h" />
-    <ClInclude Include="include\DkDevice.h" />
-    <ClInclude Include="include\DkDeviceMemory.h" />
-    <ClInclude Include="include\DkFence.h" />
-    <ClInclude Include="include\DkFramebuffer.h" />
-    <ClInclude Include="include\DkFrameResources.h" />
-    <ClInclude Include="include\DkImage.h" />
-    <ClInclude Include="include\DkImageView.h" />
-    <ClInclude Include="include\DkInstance.h" />
-    <ClInclude Include="include\DkMath.h" />
-    <ClInclude Include="include\DkPhysicalDevice.h" />
-    <ClInclude Include="include\DkPipeline.h" />
-    <ClInclude Include="include\DkQueue.h" />
-    <ClInclude Include="include\DkRenderPass.h" />
-    <ClInclude Include="include\DkSemaphore.h" />
-    <ClInclude Include="include\DkShader.h" />
-    <ClInclude Include="include\DkSwapchain.h" />
-    <ClInclude Include="include\DkUniformBuffer.h" />
-    <ClInclude Include="include\DkUtils.h" />
-    <ClInclude Include="include\DkWindow.h" />
-    <ClInclude Include="include\DkCommandPool.h" />
-    <ClInclude Include="include\DkMesh.h" />
-    <ClInclude Include="include\VulkanFunctions.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\DkApplication.cpp" />
-    <ClCompile Include="src\DkAttachmentDescriptionBuilder.cpp" />
-    <ClCompile Include="src\DkBuffer.cpp" />
-    <ClCompile Include="src\DkCommandBuffer.cpp" />
-    <ClCompile Include="src\DkCommandPool.cpp" />
-    <ClCompile Include="src\DkDescriptorPool.cpp" />
-    <ClCompile Include="src\DkDescriptorSet.cpp" />
-    <ClCompile Include="src\DkDevice.cpp" />
-    <ClCompile Include="src\DkDeviceMemory.cpp" />
-    <ClCompile Include="src\DkFence.cpp" />
-    <ClCompile Include="src\DkFramebuffer.cpp" />
-    <ClCompile Include="src\DkFrameResources.cpp" />
-    <ClCompile Include="src\DkImage.cpp" />
-    <ClCompile Include="src\DkImageView.cpp" />
-    <ClCompile Include="src\DkInstance.cpp" />
-    <ClCompile Include="src\DkMath.cpp" />
-    <ClCompile Include="src\DkPhysicalDevice.cpp" />
-    <ClCompile Include="src\DkPipeline.cpp" />
-    <ClCompile Include="src\DkRenderPass.cpp" />
-    <ClCompile Include="src\DkSemaphore.cpp" />
-    <ClCompile Include="src\DkShader.cpp" />
-    <ClCompile Include="src\DkSwapchain.cpp" />
-    <ClCompile Include="src\DkUtils.cpp" />
-    <ClCompile Include="src\DkWindow.cpp" />
-    <ClCompile Include="src\DkMesh.cpp" />
-    <ClCompile Include="src\VulkanFunctions.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="include\inline\ListOfVulkanFunctions.inl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="misc\ToDos.txt" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{9FAA2EC1-6DDE-4186-94D0-7FC83322069E}</ProjectGuid>
-    <RootNamespace>DkBase</RootNamespace>
+    <ProjectGuid>{4FAAE18C-7B16-4682-BEA2-AE1560614331}</ProjectGuid>
+    <RootNamespace>DkSample_Cube_Lighting</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <ProjectName>DkSample_Cube_Lighting</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -134,37 +70,32 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>$(ProjectName)_32d</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>$(ProjectName)_64d</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetName>$(ProjectName)_64</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>$(ProjectName)_32</TargetName>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)vkInclude;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)vkInclude;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)DkBase\vkInclude;$(SolutionDir)DkBase\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DkBase_32d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)DkBase\vkInclude;$(SolutionDir)DkBase\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DkBase_64d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -175,11 +106,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)vkInclude;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)DkBase\vkInclude;$(SolutionDir)DkBase\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DkBase_32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -190,14 +124,28 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)vkInclude;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)DkBase\vkInclude;$(SolutionDir)DkBase\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DkBase_64.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\DkSample_Cube_Lighting.cpp" />
+    <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\DkSample_Cube_Lighting.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\frag.frag" />
+    <None Include="shaders\vert.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

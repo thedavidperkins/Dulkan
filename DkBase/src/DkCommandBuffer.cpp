@@ -233,31 +233,21 @@ bool DkCommandBuffer::setScissor(uint firstScissor, const std::vector<VkRect2D>&
 	return true;
 }
 
-bool DkCommandBuffer::bindVertexBuffers(const std::vector<DkMesh*>& vertices) {
+bool DkCommandBuffer::bindVertexBuffer(DkMesh* vertices) {
 	if (!m_inRenderPass) {
-		std::cout << "Cannot bind vertex buffers. Render pass not yet started or already ended." << std::endl;
+		std::cout << "Cannot bind vertex buffer. Render pass not yet started or already ended." << std::endl;
 		return false;
 	}
 
-	if (vertices.empty()) {
-		std::cout << "Cannot bind vertex buffers. No buffers provided." << std::endl;
+	if (vertices == nullptr) {
+		std::cout << "Cannot bind vertex buffer. No buffer provided." << std::endl;
 		return false;
 	}
 
-	std::vector<VkBuffer> bfrs = { vertices[0]->getVertBuffer()->get() };
+	std::vector<VkBuffer> bfrs = { vertices->getVertBuffer()->get() };
 	std::vector<VkDeviceSize> offsets = { 0 }; // Pending implementation: non-zero vertex buffer offsets
-	if (vertices.size() > 1) {
-		for (size_t iter = 1; iter < vertices.size(); ++iter) {
-			if (vertices[iter]->getBindingIndex() != vertices[iter - 1]->getBindingIndex() + 1) {
-				std::cout << "Error: cannot bind multiple non-contiguous vertex buffers in a single call." << std::endl;
-				return false;
-			}
-			bfrs.push_back(vertices[iter]->getVertBuffer()->get());
-			offsets.push_back(0);
-		}
-	}
 
-	vkCmdBindVertexBuffers(m_commandBuffer, vertices[0]->getBindingIndex(), (uint)bfrs.size(), bfrs.data(), offsets.data());
+	vkCmdBindVertexBuffers(m_commandBuffer, 0, (uint)bfrs.size(), bfrs.data(), offsets.data());
 	return true;
 }
 

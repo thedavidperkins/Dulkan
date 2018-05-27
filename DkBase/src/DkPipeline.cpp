@@ -9,9 +9,10 @@ DkPipeline::DkPipeline(DkDevice& device, DkRenderPass& renderPass) :
 	m_viewPortRect({ { 0u, 0u }, { 1280u, 960u } }),
 	m_createFlags(0),
 	m_shaders(),
-	m_meshes(),
 	m_pushConstantRanges(),
 	m_layoutBindings(),
+	m_inVertBinds(),
+	m_inVertAtts(),
 	m_descriptorSetLayout(VK_NULL_HANDLE),
 	m_topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST),
 	m_polygonMode(VK_POLYGON_MODE_FILL),
@@ -20,7 +21,8 @@ DkPipeline::DkPipeline(DkDevice& device, DkRenderPass& renderPass) :
 	m_depthTestEnabled(false),
 	m_layout(VK_NULL_HANDLE),
 	m_pipeline(VK_NULL_HANDLE),
-	m_initialized(false)
+	m_initialized(false),
+	m_vertexBindingIndex(0)
 {}
 
 void DkPipeline::updateView(VkRect2D newView) {
@@ -65,14 +67,6 @@ void DkPipeline::setFrontFace(VkFrontFace face) {
 		return;
 	}
 	m_frontFace = face;
-}
-
-void DkPipeline::addMesh(DkMesh* mesh) {
-	if (m_initialized) {
-		std::cout << "Cannot alter input vertices after initialization." << std::endl;
-		return;
-	}
-	m_meshes.push_back(mesh);
 }
 
 bool DkPipeline::addShader(const std::string& sourceFile, VkShaderStageFlagBits stage) {
@@ -127,21 +121,14 @@ bool DkPipeline::init() {
 		shaderInfo.push_back(stageHold);
 	}
 
-	std::vector<VkVertexInputBindingDescription> inVertBinds;
-	std::vector<VkVertexInputAttributeDescription> inVertAtts;
-	uint bindingCounter = 0;
-	for (auto& mesh : m_meshes) {
-		mesh->getPipelineCreateInfo(bindingCounter++, inVertBinds, inVertAtts);
-	}
-
 	VkPipelineVertexInputStateCreateInfo vertexInfo = {
 		VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 		nullptr,
 		0,
-		(uint)inVertBinds.size(),
-		inVertBinds.data(),
-		(uint)inVertAtts.size(),
-		inVertAtts.data()
+		(uint)m_inVertBinds.size(),
+		m_inVertBinds.data(),
+		(uint)m_inVertAtts.size(),
+		m_inVertAtts.data()
 	};
 
 	VkPipelineInputAssemblyStateCreateInfo assemblyInfo = {

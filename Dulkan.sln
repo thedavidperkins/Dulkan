@@ -22,6 +22,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DkSample_Cube_and_Oct", "Dk
 		{9FAA2EC1-6DDE-4186-94D0-7FC83322069E} = {9FAA2EC1-6DDE-4186-94D0-7FC83322069E}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DkSample_Cube_Lighting", "DkSample_Cube_Lighting\DkSample_Cube_Lighting.vcxproj", "{4FAAE18C-7B16-4682-BEA2-AE1560614331}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9FAA2EC1-6DDE-4186-94D0-7FC83322069E} = {9FAA2EC1-6DDE-4186-94D0-7FC83322069E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -70,6 +75,14 @@ Global
 		{724BEE10-B48A-4D4E-A20C-B4D2CBB67566}.Release|x64.Build.0 = Release|x64
 		{724BEE10-B48A-4D4E-A20C-B4D2CBB67566}.Release|x86.ActiveCfg = Release|Win32
 		{724BEE10-B48A-4D4E-A20C-B4D2CBB67566}.Release|x86.Build.0 = Release|Win32
+		{4FAAE18C-7B16-4682-BEA2-AE1560614331}.Debug|x64.ActiveCfg = Debug|x64
+		{4FAAE18C-7B16-4682-BEA2-AE1560614331}.Debug|x64.Build.0 = Debug|x64
+		{4FAAE18C-7B16-4682-BEA2-AE1560614331}.Debug|x86.ActiveCfg = Debug|Win32
+		{4FAAE18C-7B16-4682-BEA2-AE1560614331}.Debug|x86.Build.0 = Debug|Win32
+		{4FAAE18C-7B16-4682-BEA2-AE1560614331}.Release|x64.ActiveCfg = Release|x64
+		{4FAAE18C-7B16-4682-BEA2-AE1560614331}.Release|x64.Build.0 = Release|x64
+		{4FAAE18C-7B16-4682-BEA2-AE1560614331}.Release|x86.ActiveCfg = Release|Win32
+		{4FAAE18C-7B16-4682-BEA2-AE1560614331}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

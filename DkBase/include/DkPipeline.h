@@ -28,7 +28,12 @@ public:
 	void setDepthTestEnabled(bool enabled);
 
 	bool addShader(const std::string& sourceFile, VkShaderStageFlagBits stage);
-	void addMesh(DkMesh* mesh);
+
+	template<class T>
+	void addVertexInfo() {
+		T::getPipelineCreateInfo(m_vertexBindingIndex++, m_inVertBinds, m_inVertAtts);
+	}
+
 	void addPushConstantRange(VkShaderStageFlags stage, uint offset, uint size);
 	void addDescriptorBinding(const VkDescriptorSetLayoutBinding& bndg);
 
@@ -51,9 +56,10 @@ private:
 	VkRect2D m_viewPortRect;
 	VkPipelineCreateFlags m_createFlags;
 	std::vector<DkShader*> m_shaders;
-	std::vector<DkMesh*> m_meshes;
 	std::vector<VkPushConstantRange> m_pushConstantRanges;
 	std::vector<VkDescriptorSetLayoutBinding> m_layoutBindings;
+	std::vector<VkVertexInputBindingDescription> m_inVertBinds;
+	std::vector<VkVertexInputAttributeDescription> m_inVertAtts;
 	VkDescriptorSetLayout m_descriptorSetLayout;
 	VkPrimitiveTopology m_topology;
 	VkPolygonMode m_polygonMode;
@@ -65,6 +71,9 @@ private:
 	VkPipelineLayout m_layout;
 	VkPipeline m_pipeline;
 	bool m_initialized;
+
+	// Incremented
+	uint m_vertexBindingIndex;
 };
 
 #endif//DK_PIPELINE_H

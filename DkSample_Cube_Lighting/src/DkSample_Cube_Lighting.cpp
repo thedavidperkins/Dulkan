@@ -1,5 +1,5 @@
 #include <chrono>
-#include "DkSample_Cube.h"
+#include "DkSample_Cube_Lighting.h"
 #include "DkAttachmentDescriptionBuilder.h"
 #include "DkCommandBuffer.h"
 
@@ -8,7 +8,7 @@ using namespace std::chrono;
 
 static time_point<system_clock> initTime;
 
-DkSample_Cube::DkSample_Cube() :
+DkSample_Cube_Lighting::DkSample_Cube_Lighting() :
 	DkApplication(),
 	m_frameCount(3),
 	m_swapchain(getDevice(), getWindow()),
@@ -23,7 +23,7 @@ DkSample_Cube::DkSample_Cube() :
 	m_curFrame(0)
 {}
 
-void DkSample_Cube::setFrameCount(uint count) {
+void DkSample_Cube_Lighting::setFrameCount(uint count) {
 	if (m_initialized) {
 		std::cout << "Cannot set frame count after initialization." << std::endl;
 		return;
@@ -31,7 +31,7 @@ void DkSample_Cube::setFrameCount(uint count) {
 	m_frameCount = count;
 }
 
-bool DkSample_Cube::init() {
+bool DkSample_Cube_Lighting::init() {
 	getWindow().setWindowRect({ { 0, 0 }, { 1080, 1080 } });
 	if (!vulkanInit()) return false;
 
@@ -46,6 +46,9 @@ bool DkSample_Cube::init() {
 
 		m_pushUniformSemaphores.push_back(new DkSemaphore(getDevice()));
 		m_pushUniformSemaphores.back()->init();
+
+		m_pushUniformNormalSemaphores.push_back(new DkSemaphore(getDevice()));
+		m_pushUniformNormalSemaphores.back()->init();
 	}
 	if (!getCommandPool(DK_GRAPHICS_QUEUE)->allocate(m_frames)) return false;
 
@@ -117,19 +120,26 @@ bool DkSample_Cube::init() {
 	vec4 bacCol(0.f, 1.f, 0.f, 1.f); // green
 	vec4 froCol(0.f, 0.f, 1.f, 1.f); // blue
 
+	vec4 topNorm( 0.f,  1.f,  0.f, 0.f); // up
+	vec4 botNorm( 0.f, -1.f,  0.f, 0.f); // down
+	vec4 rigNorm( 1.f,  0.f,  0.f, 0.f); // right
+	vec4 lefNorm(-1.f,  0.f,  0.f, 0.f); // left
+	vec4 bacNorm( 0.f,  0.f,  1.f, 0.f); // in
+	vec4 froNorm( 0.f,  0.f, -1.f, 0.f); // out
+
 	m_cube->addVerts({
-		{ trf, rigCol }, { trb, rigCol }, { brb, rigCol },
-		{ brb, rigCol }, { brf, rigCol }, { trf, rigCol }, // right side
-		{ tlb, lefCol }, { tlf, lefCol }, { blf, lefCol },
-		{ blf, lefCol }, { blb, lefCol }, { tlb, lefCol }, // left side
-		{ tlf, froCol }, { trf, froCol }, { brf, froCol },
-		{ brf, froCol }, { blf, froCol }, { tlf, froCol }, // front side
-		{ blb, bacCol }, { brb, bacCol }, { trb, bacCol },
-		{ trb, bacCol }, { tlb, bacCol }, { blb, bacCol }, // back side
-		{ trf, topCol }, { tlf, topCol }, { tlb, topCol },
-		{ tlb, topCol }, { trb, topCol }, { trf, topCol }, // top side
-		{ brb, botCol }, { blb, botCol }, { blf, botCol },
-		{ blf, botCol }, { brf, botCol }, { brb, botCol }  // bottom side
+		{ trf, rigCol, rigNorm }, { trb, rigCol, rigNorm }, { brb, rigCol, rigNorm },
+		{ brb, rigCol, rigNorm }, { brf, rigCol, rigNorm }, { trf, rigCol, rigNorm }, // right side
+		{ tlb, lefCol, lefNorm }, { tlf, lefCol, lefNorm }, { blf, lefCol, lefNorm },
+		{ blf, lefCol, lefNorm }, { blb, lefCol, lefNorm }, { tlb, lefCol, lefNorm }, // left side
+		{ tlf, froCol, froNorm }, { trf, froCol, froNorm }, { brf, froCol, froNorm },
+		{ brf, froCol, froNorm }, { blf, froCol, froNorm }, { tlf, froCol, froNorm }, // front side
+		{ blb, bacCol, bacNorm }, { brb, bacCol, bacNorm }, { trb, bacCol, bacNorm },
+		{ trb, bacCol, bacNorm }, { tlb, bacCol, bacNorm }, { blb, bacCol, bacNorm }, // back side
+		{ trf, topCol, topNorm }, { tlf, topCol, topNorm }, { tlb, topCol, topNorm },
+		{ tlb, topCol, topNorm }, { trb, topCol, topNorm }, { trf, topCol, topNorm }, // top side
+		{ brb, botCol, botNorm }, { blb, botCol, botNorm }, { blf, botCol, botNorm },
+		{ blf, botCol, botNorm }, { brf, botCol, botNorm }, { brb, botCol, botNorm }  // bottom side
 	});
 
 	DkCommandBuffer* bfr = getCommandPool(DK_GRAPHICS_QUEUE)->allocate(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
@@ -143,22 +153,32 @@ bool DkSample_Cube::init() {
 		VK_SHADER_STAGE_VERTEX_BIT,
 		nullptr
 	});
+	
+	m_pipeline.addDescriptorBinding({
+		1,
+		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+		1,
+		VK_SHADER_STAGE_VERTEX_BIT,
+		nullptr
+	});
+
 	m_pipeline.addVertexInfo<DkMesh>();
 	m_pipeline.setDepthTestEnabled(true);
 	if (!m_pipeline.init()) return false;
 
-	m_descPool.addToPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1);
+	m_descPool.addToPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2);
 	if (!m_descPool.init()) return false;
 	m_descSet = m_descPool.allocate(m_pipeline.getDescriptorSetLayout());
 	if (m_descSet == nullptr) return false;
 	if (!m_descSet->updateBuffer(0, m_cube->getMVPBuffer(), 0, VK_WHOLE_SIZE, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)) return false;
+	if (!m_descSet->updateBuffer(1, m_cube->getMVNormalBuffer(), 0, VK_WHOLE_SIZE, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)) return false;
 
 	m_initialized = true;
 	initTime = system_clock::now();
 	return true;
 }
 
-bool DkSample_Cube::draw() {
+bool DkSample_Cube_Lighting::draw() {
 	DkFrameResources& frame = *(m_frames[m_curFrame]);
 	if (!frame.reset()) return false;
 
@@ -167,7 +187,7 @@ bool DkSample_Cube::draw() {
 	time_point<system_clock> thisTime = system_clock::now();
 	duration<float> sinceStartDur = thisTime - initTime;
 	float sinceStart = duration_cast<duration<float>>(thisTime - initTime).count();
-	vec3 eye(3.f, 4.f, 3.f);
+	vec3 eye(6.f, 7.f, 6.f);
 	vec3 center(0.f, 0.f, 0.f);
 	vec3 up(0.f, 1.f, 0.f);
 	
@@ -179,7 +199,7 @@ bool DkSample_Cube::draw() {
 	m_cube->setMV(transform);
 	m_cube->setProj(persp);
 
-	if (!m_cube->pushMVP(cmdBfr, getQueue(DK_GRAPHICS_QUEUE), { m_pushUniformSemaphores[m_curFrame] })) return false;
+	if (!m_cube->pushMVP(cmdBfr, getQueue(DK_GRAPHICS_QUEUE), { m_pushUniformSemaphores[m_curFrame] }, { m_pushUniformNormalSemaphores[m_curFrame] })) return false;
 
 	if (!cmdBfr->beginRecording()) return false;
 
@@ -245,7 +265,7 @@ bool DkSample_Cube::draw() {
 	return true;
 }
 
-void DkSample_Cube::finalize() {
+void DkSample_Cube_Lighting::finalize() {
 	m_pipeline.finalize();
 	if (m_cube != nullptr) {
 		delete m_cube;
@@ -268,7 +288,7 @@ void DkSample_Cube::finalize() {
 	m_initialized = false;
 }
 
-bool DkSample_Cube::resize() {
+bool DkSample_Cube_Lighting::resize() {
 	if (!m_swapchain.resize()) return false;
 	for (auto& frame : m_frames) {
 		if (!frame->resize()) return false;
